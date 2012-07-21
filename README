@@ -1,0 +1,90 @@
+Text::Deva version 1.00
+-----------------------
+
+Perl module for transforming Latin script transliterated Sanskrit into
+Devanagari.
+
+The Text::Deva module provides functions to transform some input into
+transliterated characters, into Aksara objects (for which a type is defined in
+Text::Deva::Aksara), and a translation function. [describe what it can do].
+
+The encoding for all input and output is assumed to be UTF-8.  If your data is
+in a different encoding you will have to transform it first.
+
+This module includes Unit tests and an examples section in the documentation.
+These should help you see what it can do and make an informed choice whether
+you want to install it [Other info before it is installed]
+
+This module requires a modern Unicode-capable version of Perl >= 5.12.1.
+
+INSTALLATION
+
+To install this module type the following on your command line.
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+If you want to try specific tests before installation, you need to run them
+with the appropriate lib included, eg.
+
+    perl -Ilib t/tokenize.t
+
+To preview the embedded documentation you may use any one of these commands:
+
+    pod2text lib/Text/Deva.pm
+    pod2html lib/Text/Deva.pm > deva.pm.html
+    pod2man -u lib/Text/Deva.pm | nroff -Tutf8 -man | less
+
+Unfortunately, *roff still doesn't support UTF-8 encoding, so the output for
+the last command will not be entirely correct.
+
+USAGE
+
+Example usage. Simple script:
+
+    #!/usr/bin/perl -w
+    use Data::Dumper;
+    use Deva;
+    use strict;
+
+    while (<>) {
+        chomp;
+        my @tokens = Deva::tokenize($_);
+        my @aksaras = Deva::aksarize(\@tokens);
+        print Dumper(\@aksaras);
+    }
+
+The simplest usage for transforming some file "in.txt" to standard output
+would be the following one-liner:
+
+perl -w -MText::Deva -nle 'print Text::Deva::tokenize($_);' < in.txt
+
+or:
+
+echo "Himālaya" | perl -MText::Deva -ne 'print @{Text::Deva::tokenize($_)};'
+echo "Kāmasūtra" | perl -MText::Deva -ne 'use Text::Deva qw(translate); print translate($_);'
+echo "Kāmasūtra" | perl -Ilib -M'Text::Deva(translate)' -ne 'print translate($_);' # <== how about this?
+echo "Kāmasūtra" | perl -Ilib -MText::Deva -ne 'print Text::Deva->new()->translate($_);'
+
+TODO I can see only the last one of these working right now!
+TODO The recommended way is '-nle' but for me only '-ne' works as expected!
+TODO don't forget to get rid of the .DS_Store files!!! (perlmake sees them?)
+
+DEPENDENCIES
+
+This module depends only on the standard Perl modules which are normally
+present if you have Perl installed.
+
+Apart from that, a modern Unicode-capable version of Perl >= 5.12 is required.
+
+COPYRIGHT AND LICENCE
+
+Put the correct copyright and licence information here.
+
+Copyright (c) 2012 by glts <676c7473@gmail.com>
+
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself, either Perl version 5.8.8 or, at your option,
+any later version of Perl 5 you may have available.
