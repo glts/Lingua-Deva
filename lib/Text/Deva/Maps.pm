@@ -96,6 +96,6 @@ our %Finals = (
                 "h\x{0323}"         => "\N{DEVANAGARI SIGN VISARGA}",
               );
 
-our $Virama = "\N{DEVANAGARI SIGN VIRAMA}";
+our $Virama =   "\N{DEVANAGARI SIGN VIRAMA}";
 
 1;

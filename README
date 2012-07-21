@@ -1,28 +1,18 @@
 Text::Deva version 1.00
 -----------------------
 
-Perl module for converting Latin script transliterated Sanskrit into
-Devanagari and vice-versa.
+Perl module for converting Latin transliterated Sanskrit into Devanagari and
+vice-versa.
 
-The "Text::Deva" package provides the principal interface to convert between
-Devanagari and Latin, the target language being Sanskrit.  Conversion can be
-done directly via the "to_deva()" and "to_latin()" methods.
+The package "Text::Deva" provides the principal interface for the conversion
+between Devanagari and Latin, the target language being Sanskrit.
 
-    my $d = Text::Deva->new();
-    say $d->to_latin("आसीद्राजा");
-    say $d->to_deva("Nalo nāma");
+This module comes with full documentation and illustrative unit tests.  Take a
+look at them before installing the module.
 
-Internally, all input is first transformed into an object representation
-called "aksara".  This object representation is available as the package
-"Text::Deva::Aksara" and provides an interface to manipulate and query
-individual "aksaras".
-
-This module comes with full documentation and illustrative unit tests.  These
-should help you make an informed choice whether you actually need this module.
-
-Please be aware that Text::Deva depends heavily on Unicode features.  Input is
-required to be in UTF-8 encoding.  A modern, Unicode-capable version of Perl
->= 5.12.1 is obligatory.
+Please be aware that "Text::Deva" depends on Perl's Unicode features.  Input
+is required to be in UTF-8 encoding.  A modern, Unicode-capable version of
+Perl >= 5.12.1 is obligatory.
 
 INSTALLATION
 
@@ -49,27 +39,13 @@ UTF-8 encoding yet.
 
 USAGE
 
-Usage instructions are included with the documentation.  The following script
-converts a Latin input text file "in.txt" to Devanagari "out.txt".
+Usage instructions are included with the documentation.  The simplest usage
+pattern is to call "to_deva()" or "to_latin()" on a "Text::Deva" instance:
 
-    #!/usr/bin/env perl
-    use v5.12.1;
-    use strict;
-    use warnings;
-    use open ':encoding(UTF-8)';
     use Text::Deva;
-
-    open my $in,  '<', 'in.txt'  or die;
-    open my $out, '>', 'out.txt' or die;
-
     my $d = Text::Deva->new();
-    while (my $line = <$in>) {
-        print $out $d->to_deva($line);
-    }
-
-On a Unicode-capable terminal one-liners are also possible:
-
-    echo "Himālaya" | perl -MText::Deva -e 'print Text::Deva->new()->to_deva(<>);'
+    say $d->to_latin("आसीद्राजा");
+    say $d->to_deva("Nalo nāma");
 
 COPYRIGHT AND LICENCE
 

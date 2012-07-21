@@ -4,8 +4,7 @@ use v5.12.1;
 use strict;
 use warnings;
 use utf8;
-use charnames ':full';
-
+use charnames          qw( :full );
 use open               qw( :encoding(UTF-8) :std );
 use Unicode::Normalize qw( NFD NFC );
 use Carp               qw( croak carp );
@@ -17,7 +16,7 @@ use Text::Deva::Aksara;
 
 =head1 NAME
 
-Text::Deva - Translate between Latin and Devanagari Sanskrit text
+Text::Deva - Convert between Latin and Devanagari Sanskrit text
 
 =cut
 
@@ -25,8 +24,8 @@ our $VERSION = '1.00';
 
 =head1 SYNOPSIS
 
-Simple facilities for transforming transliterated Sanskrit text into its
-equivalent in Devanagari script.
+Facilities for converting Sanskrit in Latin transliteration to Devanagari and
+vice-versa.
 
     use v5.12.1;
     use strict;
@@ -36,117 +35,104 @@ equivalent in Devanagari script.
 
     # Basic usage
     my $d = Text::Deva->new();
-    say $d->to_latin("आसीद्राजा");    # returns "āsīdrājā"
-    say $d->to_deva("Nalo nāma"); # returns "नलो नाम"
+    say $d->to_latin('आसीद्राजा'); # returns 'āsīdrājā'
+    say $d->to_deva('Nalo nāma'); # returns 'नलो नाम'
 
-    # With configuration: strict, allow Danda character, 'w' for 'v'
+    # With configuration: strict, allow Danda, 'w' for 'v'
     my %c = %Text::Deva::Maps::Consonants;
     $d = Text::Deva->new(
         strict => 1,
         allow  => [ "\N{DEVANAGARI DANDA}" ],
         C      => do { $c{'w'} = delete $c{'v'}; \%c },
     );
-    say $d->to_deva("ziwāya");    # returns "zइवाय" with a warning for "z"
-    say $d->to_latin("सर्वम।");    # returns "sarvam।" with no warnings
+    say $d->to_deva('ziwāya'); # 'zइवाय', warning for 'z'
+    say $d->to_latin('सर्वम्।'); # 'sarvam।', no warnings
 
 =head1 DESCRIPTION
 
-Tokenizes Latin script text input into Devanagari aksaras and transforms it
-into Devanagari.  `Deva' is the name for the Devanagari (I<Devanāgarī>) script
-according to ISO 15924.
+The C<Text::Deva> module provides the principal interface for the conversion
+between Devanagari and Latin, the target language being Sanskrit.  "Deva" is
+the name for the Devanagari (I<Devanāgarī>) script according to ISO 15924.
 
-Using the module is as simple as creating a C<Text::Deva> instance and
-calling C<to_deva()> or C<to_latin()> with an appropriate string argument.
+Using the module is as simple as creating a C<Text::Deva> instance and calling
+C<to_deva()> or C<to_latin()> with appropriate string arguments.
 
-    $d = Text::Deva->new();
-    say $d->to_latin("कामसूत्र");
-    say $d->to_deva("Kāmasūtra");
+    my $d = Text::Deva->new();
+    say $d->to_latin('कामसूत्र');
+    say $d->to_deva('Kāmasūtra');
 
 The default translation maps adhere to the IAST transliteration scheme, but it
 is easy to customize these mappings.  This is done by copying and modifying a
-map from C<Text::Deva::Maps>, then passing it to the C<Text::Deva>
-constructor.
+map from C<Text::Deva::Maps> and passing it to the C<Text::Deva> constructor.
 
-    # Copy the consonants map
+    # Copy and modify the consonants map
     my %c = %Text::Deva::Maps::Consonants;
-
-    # Replace the key "ś" with "ç"
     $c{"c\x{0327}"} = delete $c{"s\x{0301}"};
 
     # Pass a reference to the modified map to the constructor
-    my $d = Text::Deva->new(C => \%c);
+    my $d = Text::Deva->new( C => \%c );
 
-Note that the map keys need to be in Unicode NFD form (canonical
-decomposition; see Unicode::Normalize). See the EXAMPLES section for more
-examples.
+Behind the scenes, all translation is done via an intermediate object
+representation called "aksara" (Sanskrit I<akṣara>).  These objects are
+instances of C<Text::Deva::Aksara>, which provides an interface to manipulate
+and inspect individual aksaras.
 
-All translation is done via an intermediate representation: I<Aksara> objects.
-An I<akṣara> is the Sanskrit term for a sequence of one or more initial
-consonants, optionally followed by a rhyme consisting of a vowel plus an
-optional final.  Or more formally, "(C+(VF?)?)|(VF?)", where the capital
-letters stand for consonant, vowel, and final.
-
-    # Create an array of Aksaras
-    $a = l_to_aksara("Kāmasūtra");
+    # Create an array of aksaras
+    my $a = $d->l_to_aksara('Kāmasūtra');
 
     # Print vowel in the fourth Aksara
-    say $a->[3]->vowel(); # prints "a"
+    say $a->[3]->vowel();
 
-Breaking input up into Aksara objects is not the most efficient way of doing
-this, but a useful one.  The C<Text::Deva::Aksara> interface is simple and
-lets you produce statistics easily.
+Having the intermediate C<Text::Deva::Aksara> representation comes with a
+slight penalty in efficiency, but gives you the advantage of having aksara
+structure available for precise analysis and validation.
 
-    # Count distinct rhymes
-    # FIXME This doesn't work at all!! Those aren't aksaras
-    my @lines = <$fh>;
-    for my $l (grep { defined $_->get_rhyme() } @lines) {
-        $rhymes{ join "", @{$r->get_rhyme()} }++;
-    }
-
-    # Print number of rhymes in "au"
-    say $rhymes{"au"};
-
-C<Aksara> objects built with the appropriate methods should always be
-well-formed.  In other situations, the C<is_valid()> method can be used to
-establish an Aksara's formal integrity.
-
-These units are important because the rules for the placement of the accent
-marks rely on them.
-
-=head1 METHODS
+=head2 Methods
 
 =over 4
 
 =item new()
 
-Constructs a new Text::Deva object.
-
-The C<new()> function takes two optional parameters which modify the module's
-behaviour.
+Constructor.  Takes optional arguments which are described below.
 
 =over 4
 
 =item * C<< strict => 0 or 1 >>
 
-The 'strict' mode determines how lenient the translation behaves on invalid
-input.  In strict mode warnings are output for all invalid input characters.
-It is off by default.
+In strict mode warnings for invalid input are output.  Invalid means either
+not a Devanagari token (eg. "q") or structurally ill-formed (eg. a Devanagari
+diacritic vowel following an independent vowel).
 
-=item * C<< allow => ['|', "\x{fffd}"] >>
+Off by default.
 
-In the 'allow' array you can specify additional characters which would not
-normally be allowed in transliterated Devanagari.  Those will always be
-regarded as valid.
+=item * C<< allow => [ ... ] >>
 
-=item * C<< C => consonants map >>
+In strict mode, the C<allow> array can be used to exempt certain characters
+from being flagged as invalid even though they normally would be.
 
-=item * C<< V => independent vowels map >>
+=item * C<< C => { consonants map } >>
 
-=item * C<< D => diacritic vowels map >>
+=item * C<< V => { independent vowels map } >>
 
-=item * C<< F => finals map >>
+=item * C<< D => { diacritic vowels map } >>
+
+=item * C<< F => { finals map } >>
 
 Translation maps in the direction Latin to Devanagari.
+
+=item * C<< DC => { consonants map } >>
+
+=item * C<< DV => { independent vowels map } >>
+
+=item * C<< DD => { diacritic vowels map } >>
+
+=item * C<< DF => { finals map } >>
+
+Translation maps in the direction Devanagari to Latin.
+
+The default maps are in C<Text::Deva::Maps>.  To customize, make a copy of an
+existing mapping hash and pass it to one of these parameters. Note that the
+map keys need to be in Unicode NFD form (see C<Unicode::Normalize>).
 
 =back
 
@@ -157,7 +143,7 @@ sub new {
 
     my $self = {
         strict => 0,
-        allow  => [],
+        allow  => [], # converted to a hash for efficiency
         C      => \%Consonants,
         V      => \%Vowels,
         D      => \%Diacritics,
@@ -169,8 +155,8 @@ sub new {
         %opts,
     };
 
-    # Make the inherent vowel translate to "" in the I map
-    $self->{D}->{$Inherent} = "";
+    # Make the inherent vowel translate to '' in the D map
+    $self->{D}->{$Inherent} = '';
 
     # Convert the 'allow' array to a hash for fast lookup
     my %allow = map { $_ => 1 } @{ $self->{allow} };
@@ -185,11 +171,9 @@ sub new {
 
 =item l_to_tokens()
 
-Converts a string of Latin script characters into "tokens" and returns a
-reference to an array of tokens.  An output "token" is either a string which
-may constitute a single Devanagari grapheme, eg. "e", "kh", "s ́", or it is a
-single non-Devanagari character.  More technically, a token is a hash key in
-any one of the translation maps.
+Converts a string of Latin characters into "tokens" and returns a reference to
+an array of tokens.  A "token" is either a character sequence which may
+constitute a single Devanagari grapheme or a single non-Devanagari character.
 
     my $t = $d->l_to_tokens("Bhārata\n");
     # $t now refers to the array ['Bh','ā','r','a','t','a',"\n"]
@@ -205,7 +189,7 @@ sub l_to_tokens {
 
     my @chars = split //, NFD($text);
     my @tokens;
-    my $token = "";
+    my $token = '';
     my $T = $self->{T};
 
     for my $c (@chars) {
@@ -213,38 +197,31 @@ sub l_to_tokens {
             $token .= $c;
         }
         else {
-            push @tokens, $token;
+            push @tokens, $token unless $token eq '';
             $token = $c;
         }
     }
 
-    push @tokens, $token unless $token eq "";
+    push @tokens, $token unless $token eq '';
 
     return \@tokens;
 }
 
 =item l_to_aksara()
 
-Converts its argument into "Aksaras" and returns a reference to an array of
-Aksaras.  The argument can be a Latin script string, or a reference to an
-array of tokens.
-
-I<Akṣara> is the Sanskrit term for the basic unit above the character level in
-the Devanagari script.  This module makes use of a corresponding object
-representation, C<Text::Deva::Aksara>.
+Converts its argument into "aksaras" and returns a reference to an array of
+aksaras (see C<Text::Deva::Aksara>).  The argument can be a Latin string, or a
+reference to an array of tokens.
 
     my $a = $d->l_to_aksara('hyaḥ');
-    is( ref($a->[0]), 'Text::Deva::Aksara', "one Aksara object" );
-    is( $a->[0]->vowel(), 'a', "vowel is 'a'" );
+    is( ref($a->[0]), 'Text::Deva::Aksara', 'one aksara object' );
+    done_testing();
 
-    $a = $d->l_to_aksara( ['h','y','a',"h\x{0323}"] );
-    # same thing
+Input tokens which can not be part of an aksara are passed through untouched.
+This means that the resulting array can contain both aksara objects and
+separate tokens.
 
-Input tokens which can not form an Aksara are left untouched.  This means that
-the resulting list can contain both Aksara objects and separate tokens.
-
-In "strict" mode, warnings for all invalid characters are output.  A valid
-token in an inappropriate position is also flagged.
+In strict mode warnings for invalid tokens are output.
 
 =cut
 
@@ -260,10 +237,10 @@ sub l_to_aksara {
     my ($C, $V, $F) = ($self->{C}, $self->{V}, $self->{F});
 
     # Aksarization is implemented with a state machine.
-    # Tokens are: 0 other, 1 consonant, 2 vowel, 3 final
-    # State 0: Not currently constructing an Aksara, ready for any input
+    # State 0: Not currently constructing an aksara, ready for any input
     # State 1: Constructing consonantal onset
-    # State 2: Onset and vowel read, ready for final or end of Aksara
+    # State 2: Onset and vowel read, ready for final or end of aksara
+
     for my $t (@$tokens) {
         my $lct = lc $t;
         if ($state == 0) {
@@ -291,10 +268,10 @@ sub l_to_aksara {
                 $state = 2;
             }
             else {                           # final or other: invalid
+                push @aksaras, $a;
                 if ($self->{strict} and $t !~ /\p{Space}/ and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
-                push @aksaras, $a;
                 push @aksaras, $t;
                 $state = 0;
             }
@@ -310,16 +287,16 @@ sub l_to_aksara {
                 $a = Text::Deva::Aksara->new( vowel => $lct );
                 $state = 2;
             }
-            elsif (exists $F->{$lct}) {      # final: coda
+            elsif (exists $F->{$lct}) {      # final: end of aksara
                 $a->final( $lct );
                 push @aksaras, $a;
                 $state = 0;
             }
             else {                           # other: invalid
+                push @aksaras, $a;
                 if ($self->{strict} and $t !~ /\p{Space}/ and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
-                push @aksaras, $a;
                 push @aksaras, $t;
                 $state = 0;
             }
@@ -334,19 +311,20 @@ sub l_to_aksara {
 
 =item d_to_aksara()
 
-Converts a Devanagari string into I<aksaras> (C<Text::Deva::Aksara>) and
-returns a reference to an array of aksaras.
+Converts a Devanagari string into "aksaras" and returns a reference to an
+array of aksaras.
 
     my $text = 'बुद्धः';
     my $a = $d->d_to_aksara($text);
 
     my $o = $a->[1]->onset();
-    # $o refers to the array ['d','dh']
+    # $o now refers to the array ['d','dh']
 
-Input tokens which can not form an aksara are passed through untouched.  The
-resulting list may contain both C<Aksara> objects and separate characters.
+Input tokens which can not be part of an aksara are passed through untouched.
+This means that the resulting array can contain both aksara objects and
+separate tokens.
 
-In "strict" mode, warnings for invalid or misplaced characters are output.
+In strict mode warnings for invalid tokens are output.
 
 =cut
 
@@ -361,13 +339,12 @@ sub d_to_aksara {
                                 $self->{DD}, $self->{DF} );
 
     # Aksarization is implemented with a state machine.
-    # Tokens are: 0 other, 1 consonant, 2 initial vowel,
-    # 3 diacritic vowel, 4 final, 5 Virama
     # State 0: Not currently constructing an aksara, ready for any input
-    # State 1: Consonant with inherent vowel; ready for vowel, Virama, final
-    # State 2: Ready for consonant or end of aksara
-    # State 3: Onset and vowel read, ready for final or end of aksara
+    # State 1: Consonant with inherent vowel, ready for vowel, Virama, final
+    # State 2: Virama read, ready for consonant or end of aksara
+    # State 3: Vowel read, ready for final or end of aksara
     # The inherent vowel needs to be taken into account specially
+
     for my $c (@chars) {
         if ($state == 0) {
             if (exists $DC->{$c}) {          # consonant: new aksara
@@ -386,7 +363,7 @@ sub d_to_aksara {
             }
         }
         elsif ($state == 1) {
-            if ($c =~ /$Virama/) {           # virama: final consonant or cluster
+            if ($c =~ /$Virama/) {           # Virama: consonant-final
                 $state = 2;
             }
             elsif (exists $DD->{$c}) {       # diacritic: vowel nucleus
@@ -404,7 +381,7 @@ sub d_to_aksara {
                 push @aksaras, $a;
                 $a = Text::Deva::Aksara->new( onset => [ $DC->{$c} ] );
             }
-            elsif (exists $DF->{$c}) {       # final: coda
+            elsif (exists $DF->{$c}) {       # final: end of aksara
                 $a->vowel( $Inherent );
                 $a->final( $DF->{$c} );
                 push @aksaras, $a;
@@ -439,7 +416,7 @@ sub d_to_aksara {
                 $state = 0;
             }
         }
-        elsif ($state == 3) {                # final: coda
+        elsif ($state == 3) {                # final: end of aksara
             if (exists $DF->{$c}) {
                 $a->final( $DF->{$c} );
                 push @aksaras, $a;
@@ -477,13 +454,12 @@ sub d_to_aksara {
 
 =item to_deva()
 
-Converts a Latin script string or an array of "aksaras" to a Devanagari
-string.
+Converts a Latin string or an array of aksaras to a Devanagari string.
 
-    say $d->to_deva('TODO');
+    say $d->to_deva('Kāmasūtra');
 
     # same as
-    my $a = $d->l_to_aksara('TODO');
+    my $a = $d->l_to_aksara('Kāmasūtra');
     say $d->to_deva($a);
 
 Aksaras are assumed to be well-formed.
@@ -520,8 +496,8 @@ sub to_deva {
 
 =item to_latin()
 
-Converts a Devanagari string or an array of aksaras to a transliterated string
-in Latin script.
+Converts a Devanagari string or an array of aksaras to an equivalent string in
+Latin transliteration.
 
 Aksaras are assumed to be well-formed.
 
@@ -557,14 +533,56 @@ __END__
 
 =head1 EXAMPLES
 
-Some examples will make your life easier: copy-and-paste.
+The synopsis gives the simplest usage patterns.  Here are a few more.
 
+To use "ring below" instead of "dot below" for syllabic r:
+
+    my %v = %Text::Deva::Maps::Vowels;
+    $v{"r\x{0325}"}         = delete $v{"r\x{0323}"};
+    $v{"r\x{0325}\x{0304}"} = delete $v{"r\x{0323}\x{0304}"};
+    my %d = %Text::Deva::Maps::Diacritics;
+    $d{"r\x{0325}"}         = delete $d{"r\x{0323}"};
+    $d{"r\x{0325}\x{0304}"} = delete $d{"r\x{0323}\x{0304}"};
+
+    my $d = Text::Deva->new( V => \%v, D => \%d );
+    say $d->to_deva("Kr̥ṣṇa");
+
+Use the aksara objects to produce simple statistics.
+
+    # Count distinct rhymes in @aksaras
+    for my $a (grep { defined $_->get_rhyme() } @aksaras) {
+        $rhymes{ join '', @{$a->get_rhyme()} }++;
+    }
+
+    # Print number of 'au' rhymes
+    say $rhymes{'au'};
+
+The following script converts a Latin input file "in.txt" to Devanagari.
+
+    #!/usr/bin/env perl
+    use v5.12.1;
+    use strict;
+    use warnings;
+    use open ':encoding(UTF-8)';
     use Text::Deva;
-    $d = Text::Deva->new();
 
-    TODO
+    open my $in,  '<', 'in.txt'  or die;
+    open my $out, '>', 'out.txt' or die;
 
-Bla bla examples bla.
+    my $d = Text::Deva->new();
+    while (my $line = <$in>) {
+        print $out $d->to_deva($line);
+    }
+
+On a Unicode-capable terminal one-liners are also possible:
+
+    echo "Himālaya" | perl -MText::Deva -e 'print Text::Deva->new()->to_deva(<>);'
+
+DEPENDENCIES
+
+There are no requirements apart from standard Perl modules.
+
+Note that a modern, Unicode-capable version of Perl >= 5.12 is required.
 
 =head1 AUTHOR
 
@@ -581,8 +599,8 @@ terms as Perl itself.
 
 Copyright (c) 2012 by glts
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.12.1 or,
-at your option, any later version of Perl 5 you may have available.
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself, either Perl version 5.12.1 or, at your option,
+any later version of Perl 5 you may have available.
 
 =cut
