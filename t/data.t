@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use utf8;
 
-use Data::Dumper;
 use Test::More tests => 10;
 
 BEGIN { use_ok('Text::Deva') };
@@ -19,67 +18,88 @@ raudreṇa tathā duṣputraiḥ brūyā uvāca Ṛṣīṇām dharmam gṛhṇ�
 Iva bālyāt sarvataḥ Dāne apradhṛṣyaṃ qaf siṃhagrīvo tadā yāhi
 EOF
 
-for my $line (@lines) { my $tokens = $d->l_to_tokens($line) }
-ok(1, "tokenize " . @lines . " lines in non-strict mode");
-
-{
-    # Catch and count carp warnings emitted in strict mode
-    my $warnings = 0;
-    local $SIG{__WARN__} = sub { $warnings++ };
-
-    my $e = Text::Deva->new('strict' => 1, 'allow' => ['|']);
-    for my $line (@lines) { my $tokens = $e->l_to_tokens($line) }
-    ok($warnings == 3, "tokenize " . @lines . " lines in strict mode, warnings caught");
-}
+my @dlines = split /\n/, <<'EOF';
+सभा संनिकृष्टौ कुमाराः तु च राज्ञस् कृष्णेन पश्येम ते उभौ |
+सर्वे रूपेण दीर्घवैरी एतz अवृत्तिर् अधः शूरो ज्ञातिभेदम् कॢप्तः |
+तृणानि भूमिर् दृष्ट्वा न ब्राह्मणं मन्यन्ते सतां तस्यावृत्तिभयं मा
+रौद्रेण तथा दुष्पुत्रैः ब्रूया उवाच ऋषीणाम् धर्मम् गृह्णीते |
+इव बाल्यात् सर्वतः दाने अप्रधृष्यं qअf सिंहग्रीवो तदा याहि
+EOF
 
 # Tests with a larger dataset
 
-my @large;
+my (@large, @dlarge);
 push @large, @lines for (1..2000);
+push @dlarge, @dlines for (1..2000);
 
+# Returns elapsed time
 sub secs {
     my ($start, $end) = @_;
     return sprintf("(%.2f seconds)", $end-$start);
 }
 
 my $start = times();
-for my $line (@large) { my $tokens = $d->l_to_tokens($line) }
+for (@large) { my $tokens = $d->l_to_tokens($_) }
 my $end = times();
-ok(1, "tokenize " . @large . " lines " . secs($start, $end));
+ok( 1, 'tokenize ' . @large . ' lines ' . secs($start, $end) );
 
 $start = times();
-for my $line (@large) { my $aksaras = $d->l_to_aksara($line) }
+for (@large) { my $aksaras = $d->l_to_aksara($_) }
 $end = times();
-ok(1, "aksarize " . @large . " lines " . secs($start, $end));
+ok( 1, 'aksarize ' . @large . ' lines ' . secs($start, $end) );
 
-my @aks;
 $start = times();
-for my $line (@large) { push @aks, @{ $d->l_to_aksara($line) } }
+for (@dlarge) { my $aksaras = $d->d_to_aksara($_) }
 $end = times();
-ok(1, "create array of " . @aks . " aksaras " . secs($start, $end)); 
+ok( 1, 'aksarize ' . @dlarge . ' lines in Devanagari ' . secs($start, $end) );
 
+my @aksaras;
 $start = times();
-my @akstype = grep { ref($_) eq 'Text::Deva::Aksara' } @aks;
+for (@large) { push @aksaras, @{ $d->l_to_aksara($_) } }
 $end = times();
-my $percent = int (@akstype / @aks * 100);
-ok(1, "grep " . @akstype . " (" . $percent . "%) actual aksaras in array " . secs($start, $end));
+ok( 1, 'create array of ' . @aksaras . ' aksaras ' . secs($start, $end) ); 
 
 $start = times();
-for my $a (@akstype) { $a->is_valid() };
+my @real_aksaras = grep { ref($_) eq 'Text::Deva::Aksara' } @aksaras;
 $end = times();
-ok(1, "check validity of " . @akstype . " aksaras " . secs($start, $end));
+my $percent = int (@real_aksaras / @aksaras * 100);
+ok( 1, 'grep ' . @real_aksaras . ' (' . $percent .
+       '%) actual aksaras in array ' . secs($start, $end) );
 
 $start = times();
-my @onsets = map { defined $_->onset() ? scalar @{ $_->onset() } : 0 } @akstype;
+for (@real_aksaras) { my $valid = $_->is_valid() };
+$end = times();
+ok( 1, 'check validity of ' . @real_aksaras . ' aksaras ' .
+       secs($start, $end) );
+
+$start = times();
+my @onsets = map { defined $_->onset()
+                   ? scalar @{ $_->onset() }
+                   : 0
+                 } @real_aksaras;
+$end = times();
 my %onsets;
-for my $o (@onsets) { $onsets{$o}++ };
+$onsets{$_}++ for (@onsets);
 $end = times();
-ok(1, "calculate onset length frequencies " . secs($start, $end));
+ok( 1, 'calculate onset length frequencies ' . secs($start, $end) );
 
-$start = times();
 my %rhymes;
-for my $r (grep { defined $_->get_rhyme() } @akstype) {
+$start = times();
+for my $r (grep { defined $_->get_rhyme() } @real_aksaras) {
     $rhymes{ join '', @{$r->get_rhyme()} }++;
 }
 $end = times();
-ok(1, "calculate rhyme frequencies " . secs($start, $end));
+ok( 1, 'calculate rhyme frequencies ' . secs($start, $end) );
+
+{
+    # Catch and count carp warnings emitted in strict mode
+    my $warnings = 0;
+    local $SIG{__WARN__} = sub { $warnings++ };
+
+    $d = Text::Deva->new( strict => 1, allow => ['|'] );
+    $start = times();
+    for (@large) { my $aksaras = $d->l_to_aksara($_) }
+    $end = times();
+    is( $warnings, 6000, 'aksarize ' . @large .
+        ' lines in strict mode, warnings caught ' . secs($start, $end) );
+}

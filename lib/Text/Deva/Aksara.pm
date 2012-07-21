@@ -145,9 +145,9 @@ sub is_valid {
     }
 
     # Check aksara structure
-    my $s = @{$self->{onset}} ? 'C' : '';
-    $s   .=   $self->{vowel}  ? 'V' : '';
-    $s   .=   $self->{final}  ? 'F' : '';
+    my $s = @{ $self->{onset} // [] } ? 'C' : '';
+    $s   .=    $self->{vowel}         ? 'V' : '';
+    $s   .=    $self->{final}         ? 'F' : '';
     return 0 if $s =~ m/^(C?F|)$/;
 
     # After this point empty strings and arrays have been rejected

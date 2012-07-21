@@ -11,7 +11,7 @@ BEGIN { use_ok('Text::Deva') };
 my $d = Text::Deva->new();
 my ($latin, $deva) = ("Āśvalāyana Gṛhyasūtra\n", "आश्वलायन गृह्यसूत्र\n");
 
-is( $d->to_deva($latin), $deva, 'convert to Devanagari string' );
+is( $d->to_deva($latin), $deva, 'translate to Devanagari string' );
 
 # equivalent only when lowercasing and decomposing $latin
 is( $d->to_latin($deva), NFD(lc $latin), 'convert to Latin transliteration' );

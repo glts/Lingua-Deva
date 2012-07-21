@@ -1,13 +1,12 @@
 Changes
-lib/client.pl
 lib/Text/Deva.pm
 lib/Text/Deva/Aksara.pm
+lib/Text/Deva/Maps.pm
 Makefile.PL
 MANIFEST
 README
 t/Aksara.t
 t/aksarize.t
+t/data.t
 t/Deva.t
-t/options.t
-t/tokenize.t
 t/translate.t
