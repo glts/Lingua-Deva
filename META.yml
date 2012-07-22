@@ -1,0 +1,25 @@
+---
+abstract: 'Convert between Latin and Devanagari Sanskrit text'
+author:
+  - 'glts <676c7473@gmail.com>'
+configure_requires:
+  Module::Build: 0.36
+generated_by: 'Module::Build version 0.3603'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Text-Deva
+provides:
+  Text::Deva:
+    file: lib/Text/Deva.pm
+    version: 1.00
+  Text::Deva::Aksara:
+    file: lib/Text/Deva/Aksara.pm
+  Text::Deva::Maps:
+    file: lib/Text/Deva/Maps.pm
+requires:
+  perl: v5.12.1
+resources:
+  license: http://dev.perl.org/licenses/
+version: 1.00
