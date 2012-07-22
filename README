@@ -18,10 +18,10 @@ INSTALLATION
 
 To install this module the usual procedure for Perl modules applies:
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
 
 If you want to try specific tests before the installation, you need to run
 them with the appropriate include, for example:
