@@ -16,7 +16,7 @@ Perl >= 5.12.1 is obligatory.
 
 INSTALLATION
 
-To install this module the usual procedure for Perl modules applies:
+To install this module the usual procedure for Perl modules applies.
 
     perl Makefile.PL
     make
@@ -32,15 +32,11 @@ To preview the embedded documentation you may use any one of these commands:
 
     pod2text lib/Text/Deva.pm
     pod2html lib/Text/Deva.pm > deva.pm.html
-    pod2man -u lib/Text/Deva.pm | nroff -Tutf8 -man | less
-
-Prefer the first two of these options as *roff unfortunately doesn't support
-UTF-8 encoding yet.
 
 USAGE
 
 Usage instructions are included with the documentation.  The simplest usage
-pattern is to call "to_deva()" or "to_latin()" on a "Text::Deva" instance:
+pattern is to call "to_deva()" or "to_latin()" on a "Text::Deva" instance.
 
     use Text::Deva;
     my $d = Text::Deva->new();
