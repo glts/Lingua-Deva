@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use utf8;
 use charnames ':full';
+
 use Test::More tests => 11;
 
 BEGIN { use_ok('Text::Deva') };

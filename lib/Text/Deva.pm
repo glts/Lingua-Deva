@@ -24,9 +24,6 @@ our $VERSION = '1.00';
 
 =head1 SYNOPSIS
 
-Facilities for converting Sanskrit in Latin transliteration to Devanagari and
-vice-versa.
-
     use v5.12.1;
     use strict;
     use utf8;
@@ -50,9 +47,12 @@ vice-versa.
 
 =head1 DESCRIPTION
 
+Facilities for converting Sanskrit in Latin transliteration to Devanagari and
+vice-versa.
+
 The C<Text::Deva> module provides the principal interface for the conversion
-between Devanagari and Latin, the target language being Sanskrit.  "Deva" is
-the name for the Devanagari (I<Devanāgarī>) script according to ISO 15924.
+between Devanagari and Latin.  "Deva" is the name for the Devanagari
+(I<Devanāgarī>) script according to ISO 15924.
 
 Using the module is as simple as creating a C<Text::Deva> instance and calling
 C<to_deva()> or C<to_latin()> with appropriate string arguments.
@@ -545,7 +545,7 @@ To use "ring below" instead of "dot below" for syllabic r:
     $d{"r\x{0325}\x{0304}"} = delete $d{"r\x{0323}\x{0304}"};
 
     my $d = Text::Deva->new( V => \%v, D => \%d );
-    say $d->to_deva("Kr̥ṣṇa");
+    say $d->to_deva('Kr̥ṣṇa');
 
 Use the aksara objects to produce simple statistics.
 
@@ -576,7 +576,7 @@ The following script converts a Latin input file "in.txt" to Devanagari.
 
 On a Unicode-capable terminal one-liners are also possible:
 
-    echo "Himālaya" | perl -MText::Deva -e 'print Text::Deva->new()->to_deva(<>);'
+    echo 'Himālaya' | perl -MText::Deva -e 'print Text::Deva->new()->to_deva(<>);'
 
 DEPENDENCIES
 
