@@ -1,20 +1,18 @@
-Text::Deva version 1.00
------------------------
+Text::Deva
+----------
 
-Perl module for converting Latin transliterated Sanskrit into Devanagari and
+Perl module for converting Sanskrit in Latin transliteration to Devanagari and
 vice-versa.
 
-The package "Text::Deva" provides the principal interface for the conversion
-between Devanagari and Latin, the target language being Sanskrit.
+This module comes with full documentation and illustrative unit tests.  Please
+take a look at those to learn what it can do and how to use it.
 
-This module comes with full documentation and illustrative unit tests.  Take a
-look at them before installing the module.
+"Text::Deva" depends on some of Perl's Unicode features.  Input is required to
+be in UTF-8 encoding.  A modern, Unicode-capable version of Perl >= 5.12.1 is
+obligatory.
 
-Please be aware that "Text::Deva" depends on Perl's Unicode features.  Input
-is required to be in UTF-8 encoding.  A modern, Unicode-capable version of
-Perl >= 5.12.1 is obligatory.
-
-INSTALLATION
+Installation
+------------
 
 To install this module the usual procedure for Perl modules applies.
 
@@ -30,26 +28,5 @@ them with the appropriate include, for example:
 
 To preview the embedded documentation you may use any one of these commands:
 
-    pod2text lib/Text/Deva.pm
+    pod2text lib/Text/Deva.pm | less
     pod2html lib/Text/Deva.pm > deva.pm.html
-
-USAGE
-
-Usage instructions are included with the documentation.  The simplest usage
-pattern is to call "to_deva()" or "to_latin()" on a "Text::Deva" instance.
-
-    use Text::Deva;
-    my $d = Text::Deva->new();
-    say $d->to_latin("आसीद्राजा");
-    say $d->to_deva("Nalo nāma");
-
-COPYRIGHT AND LICENCE
-
-This program is free software.  You may copy or redistribute it under the same
-terms as Perl itself.
-
-Copyright (c) 2012 by glts <676c7473@gmail.com>
-
-This library is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself, either Perl version 5.12.1 or, at your option,
-any later version of Perl 5 you may have available.

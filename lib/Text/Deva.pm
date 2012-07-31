@@ -48,11 +48,9 @@ our $VERSION = '1.00';
 =head1 DESCRIPTION
 
 Facilities for converting Sanskrit in Latin transliteration to Devanagari and
-vice-versa.
-
-The C<Text::Deva> module provides the principal interface for the conversion
-between Devanagari and Latin.  "Deva" is the name for the Devanagari
-(I<Devanāgarī>) script according to ISO 15924.
+vice-versa.  The principal interface is exposed through instances of the
+C<Text::Deva> class.  "Deva" is the name for the Devanagari (I<Devanāgarī>)
+script according to ISO 15924.
 
 Using the module is as simple as creating a C<Text::Deva> instance and calling
 C<to_deva()> or C<to_latin()> with appropriate string arguments.
@@ -131,7 +129,7 @@ Translation maps in the direction Latin to Devanagari.
 Translation maps in the direction Devanagari to Latin.
 
 The default maps are in C<Text::Deva::Maps>.  To customize, make a copy of an
-existing mapping hash and pass it to one of these parameters. Note that the
+existing mapping hash and pass it to one of these parameters.  Note that the
 map keys need to be in Unicode NFD form (see C<Unicode::Normalize>).
 
 =back
@@ -180,6 +178,16 @@ constitute a single Devanagari grapheme or a single non-Devanagari character.
 
 The input string will be normalized (NFD).  No chomping takes place.  Upper
 case and lower case distinctions are preserved.
+
+B<Technical note:>  This is not a general-purpose tokenizer.  A token
+consisting of more than one element is only correctly recognized if all
+preceding subsequences are also tokens.  For the token "abc" to be recognized,
+both "ab" and "a" need to be tokens as well.  Fortunately, the decomposed
+tokens in IAST transliteration do fulfil this property:
+
+    "r\x{0323}\x{0304}"
+    "r\x{0323}"
+    "r"
 
 =cut
 
@@ -253,7 +261,7 @@ sub l_to_aksara {
                 $state = 2;
             }
             else {                           # final or other: invalid
-                if ($self->{strict} and $t !~ /\p{Space}/ and !exists $self->{allow}->{$t}) {
+                if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
                 push @aksaras, $t;
@@ -269,7 +277,7 @@ sub l_to_aksara {
             }
             else {                           # final or other: invalid
                 push @aksaras, $a;
-                if ($self->{strict} and $t !~ /\p{Space}/ and !exists $self->{allow}->{$t}) {
+                if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
                 push @aksaras, $t;
@@ -294,7 +302,7 @@ sub l_to_aksara {
             }
             else {                           # other: invalid
                 push @aksaras, $a;
-                if ($self->{strict} and $t !~ /\p{Space}/ and !exists $self->{allow}->{$t}) {
+                if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
                 push @aksaras, $t;
@@ -356,7 +364,7 @@ sub d_to_aksara {
                 $state = 3;
             }
             else {                           # final or other: invalid
-                if ($self->{strict} and $c !~ /\p{Space}/ and !exists $self->{allow}->{$c}) {
+                if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
                 push @aksaras, $c;
@@ -390,7 +398,7 @@ sub d_to_aksara {
             else {                           # other: invalid
                 $a->vowel( $Inherent );
                 push @aksaras, $a;
-                if ($self->{strict} and $c !~ /\p{Space}/ and !exists $self->{allow}->{$c}) {
+                if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
                 push @aksaras, $c;
@@ -409,7 +417,7 @@ sub d_to_aksara {
             }
             else {                           # other: invalid
                 push @aksaras, $a;
-                if ($self->{strict} and $c !~ /\p{Space}/ and !exists $self->{allow}->{$c}) {
+                if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
                 push @aksaras, $c;
@@ -434,7 +442,7 @@ sub d_to_aksara {
             }
             else {                           # other: invalid
                 push @aksaras, $a;
-                if ($self->{strict} and $c !~ /\p{Space}/ and !exists $self->{allow}->{$c}) {
+                if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
                 push @aksaras, $c;
@@ -578,7 +586,7 @@ On a Unicode-capable terminal one-liners are also possible:
 
     echo 'Himālaya' | perl -MText::Deva -e 'print Text::Deva->new()->to_deva(<>);'
 
-DEPENDENCIES
+=head1 DEPENDENCIES
 
 There are no requirements apart from standard Perl modules.
 
@@ -597,7 +605,7 @@ Report bugs to the author or at https://github.com/glts/Text-Deva
 This program is free software.  You may copy or redistribute it under the same
 terms as Perl itself.
 
-Copyright (c) 2012 by glts
+Copyright (c) 2012 by glts <676c7473@gmail.com>
 
 This library is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself, either Perl version 5.12.1 or, at your option,
