@@ -269,10 +269,10 @@ sub l_to_aksara {
         }
         elsif ($state == 1) {
             if (exists $C->{$lct}) {         # consonant: part of onset
-                push @{ $a->onset() }, $lct;
+                push @{ $a->{onset} }, $lct;
             }
             elsif (exists $V->{$lct}) {      # vowel: vowel nucleus
-                $a->vowel( $lct );
+                $a->{vowel} = $lct;
                 $state = 2;
             }
             else {                           # final or other: invalid
@@ -296,7 +296,7 @@ sub l_to_aksara {
                 $state = 2;
             }
             elsif (exists $F->{$lct}) {      # final: end of aksara
-                $a->final( $lct );
+                $a->{final} = $lct;
                 push @aksaras, $a;
                 $state = 0;
             }
@@ -375,28 +375,28 @@ sub d_to_aksara {
                 $state = 2;
             }
             elsif (exists $DD->{$c}) {       # diacritic: vowel nucleus
-                $a->vowel( $DD->{$c} );
+                $a->{vowel} = $DD->{$c};
                 $state = 3;
             }
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
-                $a->vowel( $Inherent );
+                $a->{vowel} = $Inherent;
                 push @aksaras, $a;
                 $a = Text::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
             elsif (exists $DC->{$c}) {       # consonant: new aksara
-                $a->vowel( $Inherent );
+                $a->{vowel} = $Inherent;
                 push @aksaras, $a;
                 $a = Text::Deva::Aksara->new( onset => [ $DC->{$c} ] );
             }
             elsif (exists $DF->{$c}) {       # final: end of aksara
-                $a->vowel( $Inherent );
-                $a->final( $DF->{$c} );
+                $a->{vowel} = $Inherent;
+                $a->{final} = $DF->{$c};
                 push @aksaras, $a;
                 $state = 0;
             }
             else {                           # other: invalid
-                $a->vowel( $Inherent );
+                $a->{vowel} = $Inherent;
                 push @aksaras, $a;
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
@@ -407,7 +407,7 @@ sub d_to_aksara {
         }
         elsif ($state == 2) {
             if (exists $DC->{$c}) {          # consonant: cluster
-                push @{ $a->onset() }, $DC->{$c};
+                push @{ $a->{onset} }, $DC->{$c};
                 $state = 1;
             }
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
@@ -426,7 +426,7 @@ sub d_to_aksara {
         }
         elsif ($state == 3) {                # final: end of aksara
             if (exists $DF->{$c}) {
-                $a->final( $DF->{$c} );
+                $a->{final} = $DF->{$c};
                 push @aksaras, $a;
                 $state = 0;
             }
@@ -453,7 +453,7 @@ sub d_to_aksara {
 
     # Finish aksara currently under construction
     given ($state) {
-        when (1)      { $a->vowel( $Inherent ); continue }
+        when (1)      { $a->{vowel} = $Inherent; continue }
         when ([1..3]) { push @aksaras, $a }
     }
 
@@ -488,14 +488,14 @@ sub to_deva {
             $s .= $a;
         }
         else {
-            if (defined $a->onset()) {
-                $s .= join($Virama, map { $C->{$_} } @{ $a->onset() });
-                $s .= defined $a->vowel() ? $D->{$a->vowel()} : $Virama;
+            if (defined $a->{onset}) {
+                $s .= join($Virama, map { $C->{$_} } @{ $a->{onset} });
+                $s .= defined $a->{vowel} ? $D->{$a->{vowel}} : $Virama;
             }
-            elsif (defined $a->vowel()) {
-                $s .= $V->{$a->vowel()};
+            elsif (defined $a->{vowel}) {
+                $s .= $V->{$a->{vowel}};
             }
-            $s .= $F->{$a->final()} if defined $a->final();
+            $s .= $F->{$a->{final}} if defined $a->{final};
         }
     }
 
@@ -520,9 +520,9 @@ sub to_latin {
     my $s = '';
     for my $a (@$aksaras) {
         if (ref($a) eq 'Text::Deva::Aksara') {
-            $s .= join '', @{ $a->onset() } if defined $a->onset();
-            $s .= $a->vowel() if defined $a->vowel();
-            $s .= $a->final() if defined $a->final();
+            $s .= join '', @{ $a->{onset} } if defined $a->{onset};
+            $s .= $a->{vowel} if defined $a->{vowel};
+            $s .= $a->{final} if defined $a->{final};
         }
         else {
             $s .= $a;
