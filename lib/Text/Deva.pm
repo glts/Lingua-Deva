@@ -9,8 +9,9 @@ use open               qw( :encoding(UTF-8) :std );
 use Unicode::Normalize qw( NFD NFC );
 use Carp               qw( croak carp );
 
-use Text::Deva::Maps;
 use Text::Deva::Aksara;
+use Text::Deva::Maps qw( %Vowels %Diacritics %Consonants %Finals
+                         $Virama $Inherent );
 
 =encoding UTF-8
 

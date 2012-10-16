@@ -4,7 +4,7 @@ use v5.12.1;
 use strict;
 use warnings;
 
-use Text::Deva::Maps;
+use Text::Deva::Maps qw( %Vowels %Consonants %Finals );
 
 =encoding UTF-8
 

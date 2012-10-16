@@ -5,14 +5,16 @@ use strict;
 use warnings;
 use charnames ':full';
 
-# This module is intended for internal use.  The mappings may be accessed only
-# through the fully qualified name, eg. "%Text::Deva::Maps::Vowels".  They are
-# exported by default.
+# Hashes mapping Devanagari tokens in Latin script to Devanagari characters.
+
+# This module is intended for internal use.  The mappings must be accessed
+# through the fully qualified name (eg. "%Text::Deva::Maps::Vowels") or
+# imported explicitly.
 
 use Exporter;
 use parent 'Exporter';
-our @EXPORT = qw( %Vowels %Diacritics %Consonants %Finals
-                  $Virama $Inherent );
+our @EXPORT_OK = qw( %Vowels %Diacritics %Consonants %Finals
+                     $Virama $Inherent );
 
 # The hash keys need to be in canonically decomposed form (NFD).  For example,
 # a key "ç" (c with cedilla) needs to be entered as "c\x{0327}", ie. a "c"
