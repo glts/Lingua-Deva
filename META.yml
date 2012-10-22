@@ -11,16 +11,16 @@ license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
-name: Text-Deva
+name: Lingua-Deva
 provides:
-  Text::Deva:
-    file: lib/Text/Deva.pm
+  Lingua::Deva:
+    file: lib/Lingua/Deva.pm
     version: 1.00
-  Text::Deva::Aksara:
-    file: lib/Text/Deva/Aksara.pm
+  Lingua::Deva::Aksara:
+    file: lib/Lingua/Deva/Aksara.pm
     version: 0
-  Text::Deva::Maps:
-    file: lib/Text/Deva/Maps.pm
+  Lingua::Deva::Maps:
+    file: lib/Lingua/Deva/Maps.pm
     version: 0
 requires:
   perl: v5.12.1

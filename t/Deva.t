@@ -5,9 +5,9 @@ use utf8;
 
 use Test::More tests => 8;
 
-BEGIN { use_ok('Text::Deva') };
+BEGIN { use_ok('Lingua::Deva') };
 
-my $d = Text::Deva->new();
+my $d = Lingua::Deva->new();
 
 # Example string contains invalid characters
 my $text = "Āśvalāyana 0\x{0301}q\tr\x{0304}\x{0323} Gṛhyasūtraṃ\n";
@@ -32,7 +32,7 @@ ok( @$aksaras, 'basic aksarization of a Devanagari string' );
 my $latin = $d->to_latin($aksaras);
 ok( length $latin, 'basic Latin transliteration' );
 
-my %c = %Text::Deva::Maps::Consonants;
+my %c = %Lingua::Deva::Maps::Consonants;
 $c{"c\x{0327}"} = delete $c{"s\x{0301}"}; # custom map
-$d = Text::Deva->new( C => \%c );
+$d = Lingua::Deva->new( C => \%c );
 is( $d->to_deva('paçyema'), 'पश्येम', 'translation to Devanagari, custom map' );

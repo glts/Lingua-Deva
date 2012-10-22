@@ -1,4 +1,4 @@
-package Text::Deva;
+package Lingua::Deva;
 
 use v5.12.1;
 use strict;
@@ -9,15 +9,15 @@ use open               qw( :encoding(UTF-8) :std );
 use Unicode::Normalize qw( NFD NFC );
 use Carp               qw( croak carp );
 
-use Text::Deva::Aksara;
-use Text::Deva::Maps qw( %Vowels %Diacritics %Consonants %Finals
+use Lingua::Deva::Aksara;
+use Lingua::Deva::Maps qw( %Vowels %Diacritics %Consonants %Finals
                          $Virama $Inherent );
 
 =encoding UTF-8
 
 =head1 NAME
 
-Text::Deva - Convert between Latin and Devanagari Sanskrit text
+Lingua::Deva - Convert between Latin and Devanagari Sanskrit text
 
 =cut
 
@@ -29,16 +29,16 @@ our $VERSION = '1.00';
     use strict;
     use utf8;
     use charnames ':full';
-    use Text::Deva;
+    use Lingua::Deva;
 
     # Basic usage
-    my $d = Text::Deva->new();
+    my $d = Lingua::Deva->new();
     say $d->to_latin('आसीद्राजा'); # prints 'āsīdrājā'
     say $d->to_deva('Nalo nāma'); # prints 'नलो नाम'
 
     # With configuration: strict, allow Danda, 'w' for 'v'
-    my %c = %Text::Deva::Maps::Consonants;
-    $d = Text::Deva->new(
+    my %c = %Lingua::Deva::Maps::Consonants;
+    $d = Lingua::Deva->new(
         strict => 1,
         allow  => [ "\N{DEVANAGARI DANDA}" ],
         C      => do { $c{'w'} = delete $c{'v'}; \%c },
@@ -50,30 +50,30 @@ our $VERSION = '1.00';
 
 Facilities for converting Sanskrit in Latin transliteration to Devanagari and
 vice-versa.  The principal interface is exposed through instances of the
-C<Text::Deva> class.  "Deva" is the name for the Devanagari (I<Devanāgarī>)
+C<Lingua::Deva> class.  "Deva" is the name for the Devanagari (I<Devanāgarī>)
 script according to ISO 15924.
 
-Using the module is as simple as creating a C<Text::Deva> instance and calling
+Using the module is as simple as creating a C<Lingua::Deva> instance and calling
 C<to_deva()> or C<to_latin()> with appropriate string arguments.
 
-    my $d = Text::Deva->new();
+    my $d = Lingua::Deva->new();
     say $d->to_latin('कामसूत्र');
     say $d->to_deva('Kāmasūtra');
 
 The default translation maps adhere to the IAST transliteration scheme, but it
 is easy to customize these mappings.  This is done by copying and modifying a
-map from C<Text::Deva::Maps> and passing it to the C<Text::Deva> constructor.
+map from C<Lingua::Deva::Maps> and passing it to the C<Lingua::Deva> constructor.
 
     # Copy and modify the consonants map
-    my %c = %Text::Deva::Maps::Consonants;
+    my %c = %Lingua::Deva::Maps::Consonants;
     $c{"c\x{0327}"} = delete $c{"s\x{0301}"};
 
     # Pass a reference to the modified map to the constructor
-    my $d = Text::Deva->new( C => \%c );
+    my $d = Lingua::Deva->new( C => \%c );
 
 Behind the scenes, all translation is done via an intermediate object
 representation called "aksara" (Sanskrit I<akṣara>).  These objects are
-instances of C<Text::Deva::Aksara>, which provides an interface to inspect and
+instances of C<Lingua::Deva::Aksara>, which provides an interface to inspect and
 manipulate individual aksaras.
 
     # Create an array of aksaras
@@ -82,7 +82,7 @@ manipulate individual aksaras.
     # Print vowel in the fourth Aksara
     say $a->[3]->vowel();
 
-Having the intermediate C<Text::Deva::Aksara> representation comes with a
+Having the intermediate C<Lingua::Deva::Aksara> representation comes with a
 slight penalty in efficiency, but gives you the advantage of having aksara
 structure available for precise analysis and validation.
 
@@ -129,7 +129,7 @@ Translation maps in the direction Latin to Devanagari.
 
 Translation maps in the direction Devanagari to Latin.
 
-The default maps are in C<Text::Deva::Maps>.  To customize, make a copy of an
+The default maps are in C<Lingua::Deva::Maps>.  To customize, make a copy of an
 existing mapping hash and pass it to one of these parameters.  Note that the
 map keys need to be in Unicode NFD form (see C<Unicode::Normalize>).
 
@@ -219,11 +219,11 @@ sub l_to_tokens {
 =item l_to_aksara()
 
 Converts its argument into "aksaras" and returns a reference to an array of
-aksaras (see C<Text::Deva::Aksara>).  The argument can be a Latin string, or a
+aksaras (see C<Lingua::Deva::Aksara>).  The argument can be a Latin string, or a
 reference to an array of tokens.
 
     my $a = $d->l_to_aksara('hyaḥ');
-    is( ref($a->[0]), 'Text::Deva::Aksara', 'one aksara object' );
+    is( ref($a->[0]), 'Lingua::Deva::Aksara', 'one aksara object' );
     done_testing();
 
 Input tokens which can not be part of an aksara are passed through untouched.
@@ -254,11 +254,11 @@ sub l_to_aksara {
         my $lct = lc $t;
         if ($state == 0) {
             if (exists $C->{$lct}) {         # consonant: new aksara
-                $a = Text::Deva::Aksara->new( onset => [ $lct ] );
+                $a = Lingua::Deva::Aksara->new( onset => [ $lct ] );
                 $state = 1;
             }
             elsif (exists $V->{$lct}) {      # vowel: vowel-initial aksara
-                $a = Text::Deva::Aksara->new( vowel => $lct );
+                $a = Lingua::Deva::Aksara->new( vowel => $lct );
                 $state = 2;
             }
             else {                           # final or other: invalid
@@ -288,12 +288,12 @@ sub l_to_aksara {
         elsif ($state == 2) {
             if (exists $C->{$lct}) {         # consonant: new aksara
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( onset => [ $lct ] );
+                $a = Lingua::Deva::Aksara->new( onset => [ $lct ] );
                 $state = 1;
             }
             elsif (exists $V->{$lct}) {      # vowel: new vowel-initial aksara
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( vowel => $lct );
+                $a = Lingua::Deva::Aksara->new( vowel => $lct );
                 $state = 2;
             }
             elsif (exists $F->{$lct}) {      # final: end of aksara
@@ -357,11 +357,11 @@ sub d_to_aksara {
     for my $c (@chars) {
         if ($state == 0) {
             if (exists $DC->{$c}) {          # consonant: new aksara
-                $a = Text::Deva::Aksara->new( onset => [ $DC->{$c} ] );
+                $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
                 $state = 1;
             }
             elsif (exists $DV->{$c}) {       # vowel: vowel-initial aksara
-                $a = Text::Deva::Aksara->new( vowel => $DV->{$c} );
+                $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
             else {                           # final or other: invalid
@@ -382,13 +382,13 @@ sub d_to_aksara {
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
                 $a->{vowel} = $Inherent;
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( vowel => $DV->{$c} );
+                $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
             elsif (exists $DC->{$c}) {       # consonant: new aksara
                 $a->{vowel} = $Inherent;
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( onset => [ $DC->{$c} ] );
+                $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
             }
             elsif (exists $DF->{$c}) {       # final: end of aksara
                 $a->{vowel} = $Inherent;
@@ -413,7 +413,7 @@ sub d_to_aksara {
             }
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( vowel => $DV->{$c} );
+                $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
             else {                           # other: invalid
@@ -433,12 +433,12 @@ sub d_to_aksara {
             }
             elsif (exists $DC->{$c}) {       # consonant: new aksara
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( onset => [ $DC->{$c} ] );
+                $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
                 $state = 1;
             }
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
                 push @aksaras, $a;
-                $a = Text::Deva::Aksara->new( vowel => $DV->{$c} );
+                $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
             else {                           # other: invalid
@@ -485,7 +485,7 @@ sub to_deva {
     my ($C, $V, $D, $F) = ($self->{C}, $self->{V}, $self->{D}, $self->{F});
 
     for my $a (@$aksaras) {
-        if (ref($a) ne 'Text::Deva::Aksara') {
+        if (ref($a) ne 'Lingua::Deva::Aksara') {
             $s .= $a;
         }
         else {
@@ -520,7 +520,7 @@ sub to_latin {
 
     my $s = '';
     for my $a (@$aksaras) {
-        if (ref($a) eq 'Text::Deva::Aksara') {
+        if (ref($a) eq 'Lingua::Deva::Aksara') {
             $s .= join '', @{ $a->{onset} } if defined $a->{onset};
             $s .= $a->{vowel} if defined $a->{vowel};
             $s .= $a->{final} if defined $a->{final};
@@ -546,14 +546,14 @@ The synopsis gives the simplest usage patterns.  Here are a few more.
 
 To use "ring below" instead of "dot below" for syllabic r:
 
-    my %v = %Text::Deva::Maps::Vowels;
+    my %v = %Lingua::Deva::Maps::Vowels;
     $v{"r\x{0325}"}         = delete $v{"r\x{0323}"};
     $v{"r\x{0325}\x{0304}"} = delete $v{"r\x{0323}\x{0304}"};
-    my %d = %Text::Deva::Maps::Diacritics;
+    my %d = %Lingua::Deva::Maps::Diacritics;
     $d{"r\x{0325}"}         = delete $d{"r\x{0323}"};
     $d{"r\x{0325}\x{0304}"} = delete $d{"r\x{0323}\x{0304}"};
 
-    my $d = Text::Deva->new( V => \%v, D => \%d );
+    my $d = Lingua::Deva->new( V => \%v, D => \%d );
     say $d->to_deva('Kr̥ṣṇa');
 
 Use the aksara objects to produce simple statistics.
@@ -573,19 +573,19 @@ The following script converts a Latin input file "in.txt" to Devanagari.
     use strict;
     use warnings;
     use open ':encoding(UTF-8)';
-    use Text::Deva;
+    use Lingua::Deva;
 
     open my $in,  '<', 'in.txt'  or die;
     open my $out, '>', 'out.txt' or die;
 
-    my $d = Text::Deva->new();
+    my $d = Lingua::Deva->new();
     while (my $line = <$in>) {
         print $out $d->to_deva($line);
     }
 
 On a Unicode-capable terminal one-liners are also possible:
 
-    echo 'Himālaya' | perl -MText::Deva -e 'print Text::Deva->new()->to_deva(<>);'
+    echo 'Himālaya' | perl -MLingua::Deva -e 'print Lingua::Deva->new()->to_deva(<>);'
 
 =head1 DEPENDENCIES
 
@@ -599,7 +599,7 @@ glts <676c7473@gmail.com>
 
 =head1 BUGS
 
-Report bugs to the author or at https://github.com/glts/Text-Deva
+Report bugs to the author or at https://github.com/glts/Lingua-Deva
 
 =head1 COPYRIGHT
 
