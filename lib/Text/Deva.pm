@@ -33,8 +33,8 @@ our $VERSION = '1.00';
 
     # Basic usage
     my $d = Text::Deva->new();
-    say $d->to_latin('आसीद्राजा'); # returns 'āsīdrājā'
-    say $d->to_deva('Nalo nāma'); # returns 'नलो नाम'
+    say $d->to_latin('आसीद्राजा'); # prints 'āsīdrājā'
+    say $d->to_deva('Nalo nāma'); # prints 'नलो नाम'
 
     # With configuration: strict, allow Danda, 'w' for 'v'
     my %c = %Text::Deva::Maps::Consonants;
@@ -73,8 +73,8 @@ map from C<Text::Deva::Maps> and passing it to the C<Text::Deva> constructor.
 
 Behind the scenes, all translation is done via an intermediate object
 representation called "aksara" (Sanskrit I<akṣara>).  These objects are
-instances of C<Text::Deva::Aksara>, which provides an interface to manipulate
-and inspect individual aksaras.
+instances of C<Text::Deva::Aksara>, which provides an interface to inspect and
+manipulate individual aksaras.
 
     # Create an array of aksaras
     my $a = $d->l_to_aksara('Kāmasūtra');
