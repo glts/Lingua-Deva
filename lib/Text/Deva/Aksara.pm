@@ -139,10 +139,9 @@ well-formed and no validity check is necessary.
 sub is_valid {
     my ($self, $deva) = @_;
 
-    my ($C, $V, $F) = (\%Consonants, \%Vowels, \%Finals);
-    if (ref($deva) eq 'Text::Deva') {
-        ($C, $V, $F) = ($deva->{C}, $deva->{V}, $deva->{F});
-    }
+    my ($C, $V, $F) = ref($deva) eq 'Text::Deva'
+                    ? ($deva->{C}, $deva->{V}, $deva->{F})
+                    : (\%Consonants, \%Vowels, \%Finals);
 
     # Check aksara structure
     my $s = @{ $self->{onset} // [] } ? 'C' : '';
