@@ -1,16 +1,16 @@
-package Text::Deva::Aksara;
+package Lingua::Deva::Aksara;
 
 use v5.12.1;
 use strict;
 use warnings;
 
-use Text::Deva::Maps qw( %Vowels %Consonants %Finals );
+use Lingua::Deva::Maps qw( %Vowels %Consonants %Finals );
 
 =encoding UTF-8
 
 =head1 NAME
 
-Text::Deva::Aksara - Object representation of a Devanagari "syllable"
+Lingua::Deva::Aksara - Object representation of a Devanagari "syllable"
 
 =head1 SYNOPSIS
 
@@ -18,9 +18,9 @@ Text::Deva::Aksara - Object representation of a Devanagari "syllable"
     use strict;
     use charnames ':full';
     use open qw( :encoding(UTF-8) :std );
-    use Text::Deva::Aksara;
+    use Lingua::Deva::Aksara;
 
-    my $a = Text::Deva::Aksara->new(
+    my $a = Lingua::Deva::Aksara->new(
         onset => [ 'dh', 'r' ],
         vowel => 'au',
         final => "h\N{COMBINING DOT BELOW}",
@@ -32,11 +32,11 @@ Text::Deva::Aksara - Object representation of a Devanagari "syllable"
 =head1 DESCRIPTION
 
 I<Akṣara> is the Sanskrit term for the basic unit above the character level in
-the Devanagari script.  A C<Text::Deva::Aksara> object is a Perl
+the Devanagari script.  A C<Lingua::Deva::Aksara> object is a Perl
 representation of such a unit.
 
-C<Text::Deva::Aksara> objects serve as an intermediate format for the
-conversion facilities in C<Text::Deva>.  Onset, vowel, and final tokens are
+C<Lingua::Deva::Aksara> objects serve as an intermediate format for the
+conversion facilities in C<Lingua::Deva>.  Onset, vowel, and final tokens are
 stored in separate fields.  Tokens are in Latin script, with no distinction
 between upper and lower case.
 
@@ -48,7 +48,7 @@ between upper and lower case.
 
 Constructor.  Can take optional initial data as its argument.
 
-    Text::Deva::Aksara->new( onset => ['gh', 'r'] );
+    Lingua::Deva::Aksara->new( onset => ['gh', 'r'] );
 
 =cut
 
@@ -62,7 +62,7 @@ sub new {
 
 Accessor method for the array of onset tokens of this aksara.
 
-    my $a = Text::Deva::Aksara->new();
+    my $a = Lingua::Deva::Aksara->new();
     $a->onset( ['d', 'r'] ); # sets onset tokens to ['d', 'r']
     $a->onset(); # returns a reference to ['d', 'r']
 
@@ -125,13 +125,13 @@ aksara conforms to the structure C<(C+(VF?)?)|(VF?)>, where the letters
 represent onset consonants, vowel, and final.  Then it checks whether the
 onset, vowel, and final fields contain only appropriate tokens.
 
-If the maps have been modified in the C<Text::Deva> instance, a reference to
+If the maps have been modified in the C<Lingua::Deva> instance, a reference to
 that instance can be passed along and the modified maps will be used.
 
-    $d; # Text::Deva object with custom maps
+    $d; # Lingua::Deva object with custom maps
     $a->is_valid($d);
 
-An aksara constructed through C<Text::Deva>'s public interface is already
+An aksara constructed through C<Lingua::Deva>'s public interface is already
 well-formed and no validity check is necessary.
 
 =cut
@@ -139,7 +139,7 @@ well-formed and no validity check is necessary.
 sub is_valid {
     my ($self, $deva) = @_;
 
-    my ($C, $V, $F) = ref($deva) eq 'Text::Deva'
+    my ($C, $V, $F) = ref($deva) eq 'Lingua::Deva'
                     ? ($deva->{C}, $deva->{V}, $deva->{F})
                     : (\%Consonants, \%Vowels, \%Finals);
 

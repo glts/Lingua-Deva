@@ -1,8 +1,8 @@
 Build.PL
 Changes
-lib/Text/Deva.pm
-lib/Text/Deva/Aksara.pm
-lib/Text/Deva/Maps.pm
+lib/Lingua/Deva.pm
+lib/Lingua/Deva/Aksara.pm
+lib/Lingua/Deva/Maps.pm
 MANIFEST			This list of files
 META.yml
 README

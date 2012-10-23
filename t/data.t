@@ -5,9 +5,9 @@ use utf8;
 
 use Test::More tests => 10;
 
-BEGIN { use_ok('Text::Deva') };
+BEGIN { use_ok('Lingua::Deva') };
 
-my $d = Text::Deva->new();
+my $d = Lingua::Deva->new();
 
 # Random Sanskrit words with a few invalid characters
 my @lines = split /\n/, <<'EOF';
@@ -60,7 +60,7 @@ $end = times();
 ok( 1, 'create array of ' . @aksaras . ' aksaras ' . secs($start, $end) ); 
 
 $start = times();
-my @real_aksaras = grep { ref($_) eq 'Text::Deva::Aksara' } @aksaras;
+my @real_aksaras = grep { ref($_) eq 'Lingua::Deva::Aksara' } @aksaras;
 $end = times();
 my $percent = int (@real_aksaras / @aksaras * 100);
 ok( 1, 'grep ' . @real_aksaras . ' (' . $percent .
@@ -96,7 +96,7 @@ ok( 1, 'calculate rhyme frequencies ' . secs($start, $end) );
     my $warnings = 0;
     local $SIG{__WARN__} = sub { $warnings++ };
 
-    $d = Text::Deva->new( strict => 1, allow => ['|'] );
+    $d = Lingua::Deva->new( strict => 1, allow => ['|'] );
     $start = times();
     for (@large) { my $aksaras = $d->l_to_aksara($_) }
     $end = times();

@@ -5,10 +5,10 @@ use utf8;
 
 use Test::More tests => 9;
 
-BEGIN { use_ok('Text::Deva') };
-BEGIN { use_ok('Text::Deva::Aksara') };
+BEGIN { use_ok('Lingua::Deva') };
+BEGIN { use_ok('Lingua::Deva::Aksara') };
 
-my $d = Text::Deva->new();
+my $d = Lingua::Deva->new();
 my $text = 'ghrāṃ';
 my $a = $d->l_to_aksara($text)->[0];
 
@@ -29,7 +29,7 @@ $a = $d->l_to_aksara($text)->[0];
 
 ok( ! defined $a->get_rhyme(), 'aksara with undefined rhyme' );
 
-$a = Text::Deva::Aksara->new(
+$a = Lingua::Deva::Aksara->new(
     onset => [ "c\x{0327}" ],
     vowel => "a",
     final => "m\x{0323}",
@@ -38,8 +38,8 @@ $a = Text::Deva::Aksara->new(
 ok( ! $a->is_valid(), 'invalid aksara' );
 
 # Check aksara with custom maps
-my %c = %Text::Deva::Maps::Consonants;
-$d = Text::Deva->new(
+my %c = %Lingua::Deva::Maps::Consonants;
+$d = Lingua::Deva->new(
     C => do { $c{"c\x{0327}"} = delete $c{"s\x{0301}"}; \%c },
 );
 

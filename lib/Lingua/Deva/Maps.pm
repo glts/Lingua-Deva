@@ -1,4 +1,4 @@
-package Text::Deva::Maps;
+package Lingua::Deva::Maps;
 
 use v5.12.1;
 use strict;
@@ -8,7 +8,7 @@ use charnames ':full';
 # Hashes mapping Devanagari tokens in Latin script to Devanagari characters.
 
 # This module is intended for internal use.  The mappings must be accessed
-# through the fully qualified name (eg. "%Text::Deva::Maps::Vowels") or
+# through the fully qualified name (eg. "%Lingua::Deva::Maps::Vowels") or
 # imported explicitly.
 
 use Exporter;

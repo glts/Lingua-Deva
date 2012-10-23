@@ -6,9 +6,9 @@ use Unicode::Normalize qw( NFD );
 
 use Test::More tests => 4;
 
-BEGIN { use_ok('Text::Deva') };
+BEGIN { use_ok('Lingua::Deva') };
 
-my $d = Text::Deva->new();
+my $d = Lingua::Deva->new();
 my ($latin, $deva) = ("Āśvalāyana Gṛhyasūtra\n", "आश्वलायन गृह्यसूत्र\n");
 
 is( $d->to_deva($latin), $deva, 'translate to Devanagari string' );
