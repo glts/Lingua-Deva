@@ -174,6 +174,7 @@ sub new {
 Converts a string of Latin characters into "tokens" and returns a reference to
 an array of tokens.  A "token" is either a character sequence which may
 constitute a single Devanagari grapheme or a single non-Devanagari character.
+In the first sense, a token is simply any key in the translation maps.
 
     my $t = $d->l_to_tokens("Bhārata\n");
     # $t now refers to the array ['Bh','ā','r','a','t','a',"\n"]
@@ -181,38 +182,21 @@ constitute a single Devanagari grapheme or a single non-Devanagari character.
 The input string will be normalized (NFD).  No chomping takes place.  Upper
 case and lower case distinctions are preserved.
 
-B<Technical note:>  This is not a general-purpose tokenizer.  A token
-consisting of more than one element is only correctly recognized if all
-preceding subsequences are also tokens.  For the token "abc" to be recognized,
-both "ab" and "a" need to be tokens as well.  Fortunately, the decomposed
-tokens in IAST transliteration do fulfil this property:
-
-    "r\x{0323}\x{0304}"
-    "r\x{0323}"
-    "r"
-
 =cut
 
 sub l_to_tokens {
     my ($self, $text) = @_;
     return unless defined $text;
 
-    my @chars = split //, NFD($text);
+    my $nfdtext = NFD($text);
+
+    my $re = join '|', reverse sort { length $a <=> length $b } keys %{$self->{T}};
+    my $reobject = qr/((?:$re)|.)/is;
+
     my @tokens;
-    my $token = '';
-    my $T = $self->{T};
-
-    for my $c (@chars) {
-        if (exists $T->{lc $token.$c}) {
-            $token .= $c;
-        }
-        else {
-            push @tokens, $token unless $token eq '';
-            $token = $c;
-        }
+    while ($nfdtext =~ /$reobject/gc) {
+        push @tokens, $1;
     }
-
-    push @tokens, $token unless $token eq '';
 
     return \@tokens;
 }
