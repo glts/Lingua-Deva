@@ -1,2 +1,5 @@
-1.00  2012-10-23
-      - Initial release.
+1.00   2012-10-23
+       - Initial release.
+      
+in progress
+       - Improved tokenization in l_to_tokens().
