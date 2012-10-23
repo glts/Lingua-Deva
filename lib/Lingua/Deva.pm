@@ -11,7 +11,7 @@ use Carp               qw( croak carp );
 
 use Lingua::Deva::Aksara;
 use Lingua::Deva::Maps qw( %Vowels %Diacritics %Consonants %Finals
-                         $Virama $Inherent );
+                           $Virama $Inherent );
 
 =encoding UTF-8
 
@@ -50,11 +50,11 @@ our $VERSION = '1.00';
 
 Facilities for converting Sanskrit in Latin transliteration to Devanagari and
 vice-versa.  The principal interface is exposed through instances of the
-C<Lingua::Deva> class.  "Deva" is the name for the Devanagari (I<Devanāgarī>)
+C<Lingua::Deva> class.  "Deva" is the name for the Devanagari (I<devanāgarī>)
 script according to ISO 15924.
 
-Using the module is as simple as creating a C<Lingua::Deva> instance and calling
-C<to_deva()> or C<to_latin()> with appropriate string arguments.
+Using the module is as simple as creating a C<Lingua::Deva> instance and
+calling C<to_deva()> or C<to_latin()> with appropriate string arguments.
 
     my $d = Lingua::Deva->new();
     say $d->to_latin('कामसूत्र');
@@ -62,7 +62,8 @@ C<to_deva()> or C<to_latin()> with appropriate string arguments.
 
 The default translation maps adhere to the IAST transliteration scheme, but it
 is easy to customize these mappings.  This is done by copying and modifying a
-map from C<Lingua::Deva::Maps> and passing it to the C<Lingua::Deva> constructor.
+map from C<Lingua::Deva::Maps> and passing it to the C<Lingua::Deva>
+constructor.
 
     # Copy and modify the consonants map
     my %c = %Lingua::Deva::Maps::Consonants;
@@ -73,8 +74,8 @@ map from C<Lingua::Deva::Maps> and passing it to the C<Lingua::Deva> constructor
 
 Behind the scenes, all translation is done via an intermediate object
 representation called "aksara" (Sanskrit I<akṣara>).  These objects are
-instances of C<Lingua::Deva::Aksara>, which provides an interface to inspect and
-manipulate individual aksaras.
+instances of C<Lingua::Deva::Aksara>, which provides an interface to inspect
+and manipulate individual aksaras.
 
     # Create an array of aksaras
     my $a = $d->l_to_aksara('Kāmasūtra');
@@ -129,9 +130,9 @@ Translation maps in the direction Latin to Devanagari.
 
 Translation maps in the direction Devanagari to Latin.
 
-The default maps are in C<Lingua::Deva::Maps>.  To customize, make a copy of an
-existing mapping hash and pass it to one of these parameters.  Note that the
-map keys need to be in Unicode NFD form (see C<Unicode::Normalize>).
+The default maps are in C<Lingua::Deva::Maps>.  To customize, make a copy of
+an existing mapping hash and pass it to one of these parameters.  Note that
+the map keys need to be in Unicode NFD form (see C<Unicode::Normalize>).
 
 =back
 
@@ -219,8 +220,8 @@ sub l_to_tokens {
 =item l_to_aksara()
 
 Converts its argument into "aksaras" and returns a reference to an array of
-aksaras (see C<Lingua::Deva::Aksara>).  The argument can be a Latin string, or a
-reference to an array of tokens.
+aksaras (see C<Lingua::Deva::Aksara>).  The argument can be a Latin string, or
+a reference to an array of tokens.
 
     my $a = $d->l_to_aksara('hyaḥ');
     is( ref($a->[0]), 'Lingua::Deva::Aksara', 'one aksara object' );
@@ -270,10 +271,10 @@ sub l_to_aksara {
         }
         elsif ($state == 1) {
             if (exists $C->{$lct}) {         # consonant: part of onset
-                push @{ $a->{onset} }, $lct;
+                push @{ $a->onset() }, $lct;
             }
             elsif (exists $V->{$lct}) {      # vowel: vowel nucleus
-                $a->{vowel} = $lct;
+                $a->vowel( $lct );
                 $state = 2;
             }
             else {                           # final or other: invalid
@@ -297,7 +298,7 @@ sub l_to_aksara {
                 $state = 2;
             }
             elsif (exists $F->{$lct}) {      # final: end of aksara
-                $a->{final} = $lct;
+                $a->final( $lct );
                 push @aksaras, $a;
                 $state = 0;
             }
@@ -376,28 +377,28 @@ sub d_to_aksara {
                 $state = 2;
             }
             elsif (exists $DD->{$c}) {       # diacritic: vowel nucleus
-                $a->{vowel} = $DD->{$c};
+                $a->vowel( $DD->{$c} );
                 $state = 3;
             }
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
-                $a->{vowel} = $Inherent;
+                $a->vowel( $Inherent );
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
             elsif (exists $DC->{$c}) {       # consonant: new aksara
-                $a->{vowel} = $Inherent;
+                $a->vowel( $Inherent );
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
             }
             elsif (exists $DF->{$c}) {       # final: end of aksara
-                $a->{vowel} = $Inherent;
-                $a->{final} = $DF->{$c};
+                $a->vowel( $Inherent );
+                $a->final( $DF->{$c} );
                 push @aksaras, $a;
                 $state = 0;
             }
             else {                           # other: invalid
-                $a->{vowel} = $Inherent;
+                $a->vowel( $Inherent );
                 push @aksaras, $a;
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
@@ -408,7 +409,7 @@ sub d_to_aksara {
         }
         elsif ($state == 2) {
             if (exists $DC->{$c}) {          # consonant: cluster
-                push @{ $a->{onset} }, $DC->{$c};
+                push @{ $a->onset() }, $DC->{$c};
                 $state = 1;
             }
             elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
@@ -427,7 +428,7 @@ sub d_to_aksara {
         }
         elsif ($state == 3) {                # final: end of aksara
             if (exists $DF->{$c}) {
-                $a->{final} = $DF->{$c};
+                $a->final( $DF->{$c} );
                 push @aksaras, $a;
                 $state = 0;
             }
@@ -454,7 +455,7 @@ sub d_to_aksara {
 
     # Finish aksara currently under construction
     given ($state) {
-        when (1)      { $a->{vowel} = $Inherent; continue }
+        when (1)      { $a->vowel( $Inherent ); continue }
         when ([1..3]) { push @aksaras, $a }
     }
 
@@ -490,13 +491,13 @@ sub to_deva {
         }
         else {
             if (defined $a->{onset}) {
-                $s .= join($Virama, map { $C->{$_} } @{ $a->{onset} });
-                $s .= defined $a->{vowel} ? $D->{$a->{vowel}} : $Virama;
+                $s .= join($Virama, map { $C->{$_} } @{ $a->onset() });
+                $s .= defined $a->vowel() ? $D->{$a->vowel()} : $Virama;
             }
-            elsif (defined $a->{vowel}) {
-                $s .= $V->{$a->{vowel}};
+            elsif (defined $a->vowel()) {
+                $s .= $V->{$a->vowel()};
             }
-            $s .= $F->{$a->{final}} if defined $a->{final};
+            $s .= $F->{$a->final()} if defined $a->final();
         }
     }
 
@@ -521,9 +522,9 @@ sub to_latin {
     my $s = '';
     for my $a (@$aksaras) {
         if (ref($a) eq 'Lingua::Deva::Aksara') {
-            $s .= join '', @{ $a->{onset} } if defined $a->{onset};
-            $s .= $a->{vowel} if defined $a->{vowel};
-            $s .= $a->{final} if defined $a->{final};
+            $s .= join '', @{ $a->onset() } if defined $a->onset();
+            $s .= $a->vowel() if defined $a->vowel();
+            $s .= $a->final() if defined $a->final();
         }
         else {
             $s .= $a;

@@ -3,6 +3,7 @@ package Lingua::Deva::Maps;
 use v5.12.1;
 use strict;
 use warnings;
+use utf8;
 use charnames ':full';
 
 # Hashes mapping Devanagari tokens in Latin script to Devanagari characters.

@@ -3,6 +3,7 @@ package Lingua::Deva::Aksara;
 use v5.12.1;
 use strict;
 use warnings;
+use utf8;
 
 use Lingua::Deva::Maps qw( %Vowels %Consonants %Finals );
 

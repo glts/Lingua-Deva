@@ -29,8 +29,8 @@ EOF
 # Tests with a larger dataset
 
 my (@large, @dlarge);
-push @large, @lines for (1..2000);
-push @dlarge, @dlines for (1..2000);
+push @large, @lines for (1..1000);
+push @dlarge, @dlines for (1..1000);
 
 # Returns elapsed time
 sub secs {
@@ -100,6 +100,6 @@ ok( 1, 'calculate rhyme frequencies ' . secs($start, $end) );
     $start = times();
     for (@large) { my $aksaras = $d->l_to_aksara($_) }
     $end = times();
-    is( $warnings, 6000, 'aksarize ' . @large .
+    is( $warnings, 3000, 'aksarize ' . @large .
         ' lines in strict mode, warnings caught ' . secs($start, $end) );
 }
