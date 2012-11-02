@@ -21,7 +21,7 @@ Lingua::Deva - Convert between Latin and Devanagari Sanskrit text
 
 =cut
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
 =head1 SYNOPSIS
 
@@ -262,11 +262,10 @@ sub l_to_aksaras {
                 $state = 2;
             }
             else {                           # final or other: invalid
-                push @aksaras, $a;
                 if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
-                push @aksaras, $t;
+                push @aksaras, $a, $t;
                 $state = 0;
             }
         }
@@ -287,11 +286,10 @@ sub l_to_aksaras {
                 $state = 0;
             }
             else {                           # other: invalid
-                push @aksaras, $a;
                 if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
-                push @aksaras, $t;
+                push @aksaras, $a, $t;
                 $state = 0;
             }
         }
@@ -385,11 +383,10 @@ sub d_to_aksaras {
             }
             else {                           # other: invalid
                 $a->vowel( $Inherent );
-                push @aksaras, $a;
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
-                push @aksaras, $c;
+                push @aksaras, $a, $c;
                 $state = 0;
             }
         }
@@ -404,11 +401,10 @@ sub d_to_aksaras {
                 $state = 3;
             }
             else {                           # other: invalid
-                push @aksaras, $a;
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
-                push @aksaras, $c;
+                push @aksaras, $a, $c;
                 $state = 0;
             }
         }
@@ -429,11 +425,10 @@ sub d_to_aksaras {
                 $state = 3;
             }
             else {                           # other: invalid
-                push @aksaras, $a;
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
                 }
-                push @aksaras, $c;
+                push @aksaras, $a, $c;
                 $state = 0;
             }
         }

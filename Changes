@@ -3,3 +3,6 @@
       
 1.10   2012-10-29
        - Improved tokenization in l_to_tokens().
+1.11   2012-11-02
+       - Pluralized *_to_aksara() method names
+       - Removed redundant "push"es in to_deva() and to_latin()
