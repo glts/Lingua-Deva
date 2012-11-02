@@ -34,12 +34,12 @@ is( @$tokens, 0, 'tokenize empty string' );
 $tokens = $d->l_to_tokens();
 ok( !defined $tokens, 'tokenize undefined input' );
 
-# l_to_aksara()
+# l_to_aksaras()
 
 my $aksaras;
 
 my $input = "Āśvalāyana 0\x{0301}q\tr\x{0304}\x{0323} Gṛhyasūtraṃ\n";
-$aksaras = $d->l_to_aksara($input);
+$aksaras = $d->l_to_aksaras($input);
 my @a = grep { ref($_) eq 'Lingua::Deva::Aksara' } @$aksaras;
 is( @a, 10, 'aksarize mixed string, number of Aksaras' );
 
@@ -47,7 +47,7 @@ my @n = grep { ref($_) eq '' } @$aksaras;
 is( @n, 7, 'aksarize mixed string, number of other tokens' );
 
 $input = ['B', 'u', 'd', 'dh', 'a', "h\x{0323}"];
-$aksaras = $d->l_to_aksara($input);
+$aksaras = $d->l_to_aksaras($input);
 @a = grep { ref($_) eq 'Lingua::Deva::Aksara' } @$aksaras;
 is( @a, 2, 'aksarize array of tokens' );
 
@@ -58,20 +58,20 @@ is( @a, 2, 'aksarize array of tokens' );
     $input = "Āśvalāyana 0\x{0301}q\tr\x{0304}\x{0323} Gṛhyasūtraṃ\n";
 
     $d = Lingua::Deva->new( strict => 1 );
-    $d->l_to_aksara($input);
+    $d->l_to_aksaras($input);
     is( $warnings, 3, 'aksarize mixed string in strict mode' );
 
     $warnings = 0;
     $d = Lingua::Deva->new( strict => 1, allow => ['q', '0'] );
-    $d->l_to_aksara($input);
+    $d->l_to_aksaras($input);
     is( $warnings, 1, 'aksarize mixed string, strict mode with exceptions' );
 }
 
-# d_to_aksara()
+# d_to_aksaras()
 
 $d = Lingua::Deva->new();
 $input = "आश्वलायन 0\x{0301}q\tॠ गृह्यसूत्रं\n";
-$aksaras = $d->d_to_aksara($input);
+$aksaras = $d->d_to_aksaras($input);
 @a = grep { ref($_) eq 'Lingua::Deva::Aksara' } @$aksaras;
 is( @a, 10, 'aksarize Devanagari string' );
 
@@ -80,6 +80,6 @@ is( @a, 10, 'aksarize Devanagari string' );
     local $SIG{__WARN__} = sub { $warnings++ };
 
     $d = Lingua::Deva->new( strict => 1, allow => ['q', '0'] );
-    $d->d_to_aksara($input);
+    $d->d_to_aksaras($input);
     is( $warnings, 1, 'aksarize Devanagari string in strict mode' );
 }

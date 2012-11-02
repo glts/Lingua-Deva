@@ -10,7 +10,7 @@ BEGIN { use_ok('Lingua::Deva::Aksara') };
 
 my $d = Lingua::Deva->new();
 my $text = 'ghrāṃ';
-my $a = $d->l_to_aksara($text)->[0];
+my $a = $d->l_to_aksaras($text)->[0];
 
 ok( @{$a->onset()} && $a->vowel() && $a->final(), 'complete aksara' );
 
@@ -20,12 +20,12 @@ is_deeply( $a->get_rhyme(), ["a\x{0304}", "m\x{0323}"],
            'rhyme of complete aksara' );
 
 $text = 'dhvī';
-$a = $d->l_to_aksara($text)->[0];
+$a = $d->l_to_aksaras($text)->[0];
 
 ok( ! defined $a->final(), 'aksara with undefined fields' );
 
 $text = 'str';
-$a = $d->l_to_aksara($text)->[0];
+$a = $d->l_to_aksaras($text)->[0];
 
 ok( ! defined $a->get_rhyme(), 'aksara with undefined rhyme' );
 

@@ -78,7 +78,7 @@ instances of C<Lingua::Deva::Aksara>, which provides an interface to inspect
 and manipulate individual aksaras.
 
     # Create an array of aksaras
-    my $a = $d->l_to_aksara('Kāmasūtra');
+    my $a = $d->l_to_aksaras('Kāmasūtra');
 
     # Print vowel in the fourth Aksara
     say $a->[3]->vowel();
@@ -201,13 +201,13 @@ sub l_to_tokens {
     return \@tokens;
 }
 
-=item l_to_aksara()
+=item l_to_aksaras()
 
 Converts its argument into "aksaras" and returns a reference to an array of
 aksaras (see C<Lingua::Deva::Aksara>).  The argument can be a Latin string, or
 a reference to an array of tokens.
 
-    my $a = $d->l_to_aksara('hyaḥ');
+    my $a = $d->l_to_aksaras('hyaḥ');
     is( ref($a->[0]), 'Lingua::Deva::Aksara', 'one aksara object' );
     done_testing();
 
@@ -219,7 +219,7 @@ In strict mode warnings for invalid tokens are output.
 
 =cut
 
-sub l_to_aksara {
+sub l_to_aksaras {
     my ($self, $input) = @_;
 
     # Input can be either a string (scalar) or an array reference
@@ -303,13 +303,15 @@ sub l_to_aksara {
     return \@aksaras;
 }
 
-=item d_to_aksara()
+*l_to_aksara = \&l_to_aksaras; # alias
+
+=item d_to_aksaras()
 
 Converts a Devanagari string into "aksaras" and returns a reference to an
 array of aksaras.
 
     my $text = 'बुद्धः';
-    my $a = $d->d_to_aksara($text);
+    my $a = $d->d_to_aksaras($text);
 
     my $o = $a->[1]->onset();
     # $o now refers to the array ['d','dh']
@@ -322,7 +324,7 @@ In strict mode warnings for invalid tokens are output.
 
 =cut
 
-sub d_to_aksara {
+sub d_to_aksaras {
     my ($self, $input) = @_;
 
     my @chars = split //, $input;
@@ -446,6 +448,8 @@ sub d_to_aksara {
     return \@aksaras;
 }
 
+*d_to_aksara = \&d_to_aksaras; # alias
+
 =item to_deva()
 
 Converts a Latin string or an array of aksaras to a Devanagari string.
@@ -453,7 +457,7 @@ Converts a Latin string or an array of aksaras to a Devanagari string.
     say $d->to_deva('Kāmasūtra');
 
     # same as
-    my $a = $d->l_to_aksara('Kāmasūtra');
+    my $a = $d->l_to_aksaras('Kāmasūtra');
     say $d->to_deva($a);
 
 Aksaras are assumed to be well-formed.
@@ -464,7 +468,7 @@ sub to_deva {
     my ($self, $input) = @_;
 
     # Input can be either a string (scalar) or an array reference
-    my $aksaras = ref($input) eq '' ? $self->l_to_aksara($input) : $input;
+    my $aksaras = ref($input) eq '' ? $self->l_to_aksaras($input) : $input;
 
     my $s = '';
     my ($C, $V, $D, $F) = ($self->{C}, $self->{V}, $self->{D}, $self->{F});
@@ -501,7 +505,7 @@ sub to_latin {
     my ($self, $input) = @_;
 
     # Input can be either a string (scalar) or an array reference
-    my $aksaras = ref($input) eq '' ? $self->d_to_aksara($input) : $input;
+    my $aksaras = ref($input) eq '' ? $self->d_to_aksaras($input) : $input;
 
     my $s = '';
     for my $a (@$aksaras) {

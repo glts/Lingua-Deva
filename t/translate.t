@@ -16,5 +16,5 @@ is( $d->to_deva($latin), $deva, 'translate to Devanagari string' );
 # equivalent only when lowercasing and decomposing $latin
 is( $d->to_latin($deva), NFD(lc $latin), 'convert to Latin transliteration' );
 
-my $aksaras = $d->l_to_aksara($latin);
+my $aksaras = $d->l_to_aksaras($latin);
 is( $d->to_deva($aksaras), $deva, 'convert aksaras to Devanagari string' );

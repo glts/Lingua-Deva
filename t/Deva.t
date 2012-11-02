@@ -15,10 +15,10 @@ my $text = "Āśvalāyana 0\x{0301}q\tr\x{0304}\x{0323} Gṛhyasūtraṃ\n";
 my $tokens = $d->l_to_tokens($text);
 ok( @$tokens, 'basic string tokenization' );
 
-my $aksaras = $d->l_to_aksara($tokens);
+my $aksaras = $d->l_to_aksaras($tokens);
 ok( @$aksaras, 'basic aksarization of an array of tokens' );
 
-is_deeply( $aksaras, $d->l_to_aksara($text),
+is_deeply( $aksaras, $d->l_to_aksaras($text),
     'equivalent aksarization of string and token array' );
 
 my $deva = $d->to_deva($aksaras);
@@ -26,7 +26,7 @@ ok( length $deva, 'basic translation to Devanagari' );
 
 $text = "आश्वलायन 0\x{0301}q\tॠ गृह्यसूत्रं\n";
 
-$aksaras = $d->d_to_aksara($text);
+$aksaras = $d->d_to_aksaras($text);
 ok( @$aksaras, 'basic aksarization of a Devanagari string' );
 
 my $latin = $d->to_latin($aksaras);

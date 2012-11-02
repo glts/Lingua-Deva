@@ -44,18 +44,18 @@ my $end = times();
 ok( 1, 'tokenize ' . @large . ' lines ' . secs($start, $end) );
 
 $start = times();
-for (@large) { my $aksaras = $d->l_to_aksara($_) }
+for (@large) { my $aksaras = $d->l_to_aksaras($_) }
 $end = times();
 ok( 1, 'aksarize ' . @large . ' lines ' . secs($start, $end) );
 
 $start = times();
-for (@dlarge) { my $aksaras = $d->d_to_aksara($_) }
+for (@dlarge) { my $aksaras = $d->d_to_aksaras($_) }
 $end = times();
 ok( 1, 'aksarize ' . @dlarge . ' lines in Devanagari ' . secs($start, $end) );
 
 my @aksaras;
 $start = times();
-for (@large) { push @aksaras, @{ $d->l_to_aksara($_) } }
+for (@large) { push @aksaras, @{ $d->l_to_aksaras($_) } }
 $end = times();
 ok( 1, 'create array of ' . @aksaras . ' aksaras ' . secs($start, $end) ); 
 
@@ -98,7 +98,7 @@ ok( 1, 'calculate rhyme frequencies ' . secs($start, $end) );
 
     $d = Lingua::Deva->new( strict => 1, allow => ['|'] );
     $start = times();
-    for (@large) { my $aksaras = $d->l_to_aksara($_) }
+    for (@large) { my $aksaras = $d->l_to_aksaras($_) }
     $end = times();
     is( $warnings, 3000, 'aksarize ' . @large .
         ' lines in strict mode, warnings caught ' . secs($start, $end) );
