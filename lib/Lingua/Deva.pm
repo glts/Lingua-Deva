@@ -97,6 +97,14 @@ Constructor.  Takes optional arguments which are described below.
 
 =over 4
 
+=item * C<< casesensitive => 0 or 1 >>
+
+Specify whether the maps are to be treated in a case-sensitive manner.  Since
+case-insensitive IAST is the default mapping this is off by default.  Other
+maps such as Harvard-Kyoto require this to be set to 1.
+
+Default: 0
+
 =item * C<< strict => 0 or 1 >>
 
 In strict mode warnings for invalid input are output.  Invalid means either
@@ -128,7 +136,8 @@ Translation maps in the direction Latin to Devanagari.
 
 =item * C<< DF => { finals map } >>
 
-Translation maps in the direction Devanagari to Latin.
+Translation maps in the direction Devanagari to Latin.  When these are not
+given, reversed versions of the maps in the opposite directions are used.
 
 The default maps are in C<Lingua::Deva::Maps>.  To customize, make a copy of
 an existing mapping hash and pass it to one of these parameters.  Note that
@@ -142,18 +151,20 @@ sub new {
     my ($class, %opts) = @_;
 
     my $self = {
-        strict => 0,
-        allow  => [], # converted to a hash for efficiency
-        C      => \%Consonants,
-        V      => \%Vowels,
-        D      => \%Diacritics,
-        F      => \%Finals,
-        DC     => do { my %c = reverse %Consonants; \%c },
-        DV     => do { my %v = reverse %Vowels;     \%v },
-        DD     => do { my %d = reverse %Diacritics; \%d },
-        DF     => do { my %f = reverse %Finals;     \%f },
+        casesensitive => 0,
+        strict        => 0,
+        allow         => [], # converted to a hash for efficiency
+        C             => \%Consonants,
+        V             => \%Vowels,
+        D             => \%Diacritics,
+        F             => \%Finals,
         %opts,
     };
+
+    # By default use reverse maps for the direction Devanagari to Latin
+    for (qw( C V D F )) {
+        $self->{"D$_"} = do { my %m = reverse %{$self->{$_}}; \%m } if !defined $self->{"D$_"};
+    }
 
     # Make the inherent vowel translate to '' in the D map
     $self->{D}->{$Inherent} = '';
@@ -191,7 +202,7 @@ sub l_to_tokens {
     my $nfdtext = NFD($text);
 
     my $re = join '|', reverse sort { length $a <=> length $b } keys %{$self->{T}};
-    my $reobject = qr/((?:$re)|.)/is;
+    my $reobject = $self->{casesensitive} ? qr/($re|.)/s : qr/($re|.)/is;
 
     my @tokens;
     while ($nfdtext =~ /$reobject/gc) {
@@ -236,7 +247,7 @@ sub l_to_aksaras {
     # State 2: Onset and vowel read, ready for final or end of aksara
 
     for my $t (@$tokens) {
-        my $lct = lc $t;
+        my $lct = $self->{casesensitive} ? $t : lc $t;
         if ($state == 0) {
             if (exists $C->{$lct}) {         # consonant: new aksara
                 $a = Lingua::Deva::Aksara->new( onset => [ $lct ] );
