@@ -25,7 +25,8 @@ our @EXPORT_OK = qw( %Consonants %Vowels %Diacritics %Finals
 
     use Lingua::Deva::Maps::IAST;   # or
     use Lingua::Deva::Maps::HK;     # or
-    use Lingua::Deva::Maps::ITRANS;
+    use Lingua::Deva::Maps::ITRANS; # or
+    use Lingua::Deva::Maps::ISO15919;
 
     my $d = Lingua::Deva->new(
         casesensitive => 1,
@@ -49,6 +50,8 @@ However, it does provide the namespace for the ready-made maps,
 =item Lingua::Deva::Maps::HK Harvard-Kyoto transliteration
 
 =item Lingua::Deva::Maps::ITRANS
+
+=item Lingua::Deva::Maps::ISO15919 ISO 15919 (simplified)
 
 =back
 
