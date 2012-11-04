@@ -10,7 +10,7 @@ use Unicode::Normalize qw( NFD NFC );
 use Carp               qw( croak carp );
 
 use Lingua::Deva::Aksara;
-use Lingua::Deva::Maps qw( %Vowels %Diacritics %Consonants %Finals
+use Lingua::Deva::Maps qw( %Consonants %Vowels %Diacritics %Finals
                            $Inherent $Virama $Avagraha );
 
 =encoding UTF-8

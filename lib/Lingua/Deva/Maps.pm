@@ -18,7 +18,7 @@ Lingua::Deva::Maps - Default maps setup for Lingua::Deva
 
 use Exporter;
 use parent 'Exporter';
-our @EXPORT_OK = qw( %Vowels %Diacritics %Consonants %Finals
+our @EXPORT_OK = qw( %Consonants %Vowels %Diacritics %Finals
                      $Inherent $Virama $Avagraha );
 
 =head1 SYNOPSIS
