@@ -4,10 +4,11 @@
 1.10   2012-10-29
        - Improved tokenization in l_to_tokens().
 1.11   2012-11-02
-       - Pluralized *_to_aksara() method names
-       - Removed redundant "push"es in to_deva() and to_latin()
+       - Pluralized *_to_aksara() method names.
+       - Removed redundant "push"es in to_deva() and to_latin().
 
 1.20   2012-11-03
-       - Refactored maps handling, moved IAST maps
-       - Added ITRANS and Harvard-Kyoto maps
-       - Added option for case-sensitive maps (a != A)
+       - Refactored maps handling, moved IAST maps.
+       - Added maps for ITRANS, Harvard-Kyoto, ISO 15919 (simplified).
+       - Added option for case-sensitive maps (a != A).
+       - Added missing Avagraha handling.

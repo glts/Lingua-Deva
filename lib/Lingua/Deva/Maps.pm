@@ -19,7 +19,7 @@ Lingua::Deva::Maps - Default maps setup for Lingua::Deva
 use Exporter;
 use parent 'Exporter';
 our @EXPORT_OK = qw( %Vowels %Diacritics %Consonants %Finals
-                     $Virama $Inherent );
+                     $Inherent $Virama $Avagraha );
 
 =head1 SYNOPSIS
 
@@ -72,8 +72,8 @@ Info on usage?
 # through the fully qualified name (eg. "%Lingua::Deva::Maps::IAST::Vowels")
 
 Finally, C<Lingua::Deva::Maps> also defines the global variables C<$Inherent>
-(the inherent vowel I<a>) and C<$Virama> which are unlikely to need
-configurability.
+(the inherent vowel I<a>), C<$Virama> ( ्), and C<$Avagraha> (ऽ) which are
+unlikely to need configurability.
 
 =cut
 
@@ -86,5 +86,6 @@ configurability.
 # Global variables
 our $Inherent = "a";
 our $Virama   = "\N{DEVANAGARI SIGN VIRAMA}";
+our $Avagraha = "\N{DEVANAGARI SIGN AVAGRAHA}"; # TODO Add avagraha support
 
 1;

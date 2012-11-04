@@ -11,7 +11,7 @@ use Carp               qw( croak carp );
 
 use Lingua::Deva::Aksara;
 use Lingua::Deva::Maps qw( %Vowels %Diacritics %Consonants %Finals
-                           $Virama $Inherent );
+                           $Inherent $Virama $Avagraha );
 
 =encoding UTF-8
 
@@ -118,6 +118,12 @@ Off by default.
 In strict mode, the C<allow> array can be used to exempt certain characters
 from being flagged as invalid even though they normally would be.
 
+=item * C<< avagraha => "'" >>
+
+Specify Latin character used for the transcription of I<avagraha> (ऽ).
+
+Default is "'" (apostrophe).
+
 =item * C<< C => { consonants map } >>
 
 =item * C<< V => { independent vowels map } >>
@@ -154,6 +160,7 @@ sub new {
         casesensitive => 0,
         strict        => 0,
         allow         => [], # converted to a hash for efficiency
+        avagraha      => "'",
         C             => \%Consonants,
         V             => \%Vowels,
         D             => \%Diacritics,
@@ -161,13 +168,13 @@ sub new {
         %opts,
     };
 
-    # By default use reverse maps for the direction Devanagari to Latin
+    # By default use reversed maps for the opposite direction (DC DV DD DF)
     for (qw( C V D F )) {
         $self->{"D$_"} = do { my %m = reverse %{$self->{$_}}; \%m } if !defined $self->{"D$_"};
     }
 
     # Make the inherent vowel translate to '' in the D map
-    $self->{D}->{$Inherent} = '';
+    $self->{D}->{$Inherent} = ''; # FIXME What is this for? Delete.
 
     # Convert the 'allow' array to a hash for fast lookup
     my %allow = map { $_ => 1 } @{ $self->{allow} };
@@ -257,8 +264,9 @@ sub l_to_aksaras {
                 $a = Lingua::Deva::Aksara->new( vowel => $lct );
                 $state = 2;
             }
-            else {                           # final or other: invalid
-                if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
+            else {                           # final/space/avagraha/other
+                if ($t !~ /\p{Space}/ and $t ne $self->{avagraha}
+                        and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
                 push @aksaras, $t;
@@ -272,8 +280,9 @@ sub l_to_aksaras {
                 $a->vowel( $lct );
                 $state = 2;
             }
-            else {                           # final or other: invalid
-                if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
+            else {                           # final/space/avagraha/other
+                if ($t !~ /\p{Space}/ and $t ne $self->{avagraha}
+                        and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
                 push @aksaras, $a, $t;
@@ -296,8 +305,9 @@ sub l_to_aksaras {
                 push @aksaras, $a;
                 $state = 0;
             }
-            else {                           # other: invalid
-                if ($t !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$t}) {
+            else {                           # space/avagraha/other
+                if ($t !~ /\p{Space}/ and $t ne $self->{avagraha}
+                        and $self->{strict} and !exists $self->{allow}->{$t}) {
                     carp("Invalid token $t read");
                 }
                 push @aksaras, $a, $t;
@@ -360,6 +370,9 @@ sub d_to_aksaras {
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
+            elsif ($c =~ /$Avagraha/) {      # Avagraha
+                push @aksaras, $self->{avagraha};
+            }
             else {                           # final or other: invalid
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
                     carp("Invalid character $c read");
@@ -392,6 +405,11 @@ sub d_to_aksaras {
                 push @aksaras, $a;
                 $state = 0;
             }
+            elsif ($c =~ /$Avagraha/) {      # Avagraha
+                $a->vowel( $Inherent );
+                push @aksaras, $a, $self->{avagraha};
+                $state = 0;
+            }
             else {                           # other: invalid
                 $a->vowel( $Inherent );
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
@@ -410,6 +428,10 @@ sub d_to_aksaras {
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
+            }
+            elsif ($c =~ /$Avagraha/) {      # Avagraha
+                push @aksaras, $a, $self->{avagraha};
+                $state = 0;
             }
             else {                           # other: invalid
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
@@ -434,6 +456,10 @@ sub d_to_aksaras {
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
+            }
+            elsif ($c =~ /$Avagraha/) {      # Avagraha
+                push @aksaras, $a, $self->{avagraha};
+                $state = 0;
             }
             else {                           # other: invalid
                 if ($c !~ /\p{Space}/ and $self->{strict} and !exists $self->{allow}->{$c}) {
@@ -481,7 +507,7 @@ sub to_deva {
 
     for my $a (@$aksaras) {
         if (ref($a) ne 'Lingua::Deva::Aksara') {
-            $s .= $a;
+            $s .= $a eq $self->{avagraha} ? $Avagraha : $a;
         }
         else {
             if (defined $a->{onset}) {
