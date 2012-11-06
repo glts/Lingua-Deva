@@ -50,11 +50,11 @@ our $VERSION = '1.11';
 
 Facilities for converting Sanskrit in Latin transliteration to Devanagari and
 vice-versa.  The principal interface is exposed through instances of the
-C<Lingua::Deva> class.  "Deva" is the name for the Devanagari (I<devanāgarī>)
+L<Lingua::Deva> class.  "Deva" is the name for the Devanagari (I<devanāgarī>)
 script according to ISO 15924.
 
 Using the module is as simple as creating a C<Lingua::Deva> instance and
-calling C<to_deva()> or C<to_latin()> with appropriate string arguments.
+calling L<to_deva()> or L<to_latin()> with appropriate string arguments.
 
     my $d = Lingua::Deva->new();
     say $d->to_latin('कामसूत्र');
@@ -70,11 +70,11 @@ scheme by passing it to the constructor's C<map> argument.
 
 In the case that the included maps are not enough, all transliteration
 mappings are completely customizable, see the instructions in
-C<Lingua::Deva::Maps>.
+L<Lingua::Deva::Maps>.
 
 Behind the scenes, all translation is done via an intermediate object
 representation called "aksara" (Sanskrit I<akṣara>).  These objects are
-instances of C<Lingua::Deva::Aksara>, which provides an interface to inspect
+instances of L<Lingua::Deva::Aksara>, which provides an interface to inspect
 and manipulate individual aksaras.
 
     # Create an array of aksaras
@@ -83,7 +83,7 @@ and manipulate individual aksaras.
     # Print vowel in the fourth Aksara
     say $a->[3]->vowel();
 
-Having the intermediate C<Lingua::Deva::Aksara> representation comes with a
+Having the intermediate L<Lingua::Deva::Aksara> representation comes with a
 slight penalty in efficiency, but gives you the advantage of having aksara
 structure available for precise analysis and validation.
 
@@ -97,11 +97,11 @@ Constructor.  Takes optional arguments which are described below.
 
 =over 4
 
-=item * C<< map => ( ISO15919 | ITRANS | IAST | HK ) >>
+=item C<< map => 'IAST'|'ISO15919'|'HK'|'ITRANS' >>
 
 Select a ready-made transliteration scheme.
 
-=item * C<< casesensitive => 0 or 1 >>
+=item C<< casesensitive => (0|1) >>
 
 Specify whether the maps are to be treated in a case-sensitive manner.  Since
 case-insensitive IAST is the default mapping this is off by default.  Other
@@ -109,7 +109,7 @@ maps such as Harvard-Kyoto require this to be set to 1.
 
 Default: 0
 
-=item * C<< strict => 0 or 1 >>
+=item C<< strict => (0|1) >>
 
 In strict mode warnings for invalid input are output.  Invalid means either
 not a Devanagari token (eg. "q") or structurally ill-formed (eg. a Devanagari
@@ -117,41 +117,41 @@ diacritic vowel following an independent vowel).
 
 Off by default.
 
-=item * C<< allow => [ ... ] >>
+=item C<< allow => [ ... ] >>
 
 In strict mode, the C<allow> array can be used to exempt certain characters
 from being flagged as invalid even though they normally would be.
 
-=item * C<< avagraha => "'" >>
+=item C<< avagraha => "'" >>
 
 Specify Latin character used for the transcription of I<avagraha> (ऽ).
 
 Default is "'" (apostrophe).
 
-=item * C<< C => { consonants map } >>
+=item C<< C => { consonants map } >>
 
-=item * C<< V => { independent vowels map } >>
+=item C<< V => { independent vowels map } >>
 
-=item * C<< D => { diacritic vowels map } >>
+=item C<< D => { diacritic vowels map } >>
 
-=item * C<< F => { finals map } >>
+=item C<< F => { finals map } >>
 
 Translation maps in the direction Latin to Devanagari.
 
-=item * C<< DC => { consonants map } >>
+=item C<< DC => { consonants map } >>
 
-=item * C<< DV => { independent vowels map } >>
+=item C<< DV => { independent vowels map } >>
 
-=item * C<< DD => { diacritic vowels map } >>
+=item C<< DD => { diacritic vowels map } >>
 
-=item * C<< DF => { finals map } >>
+=item C<< DF => { finals map } >>
 
 Translation maps in the direction Devanagari to Latin.  When these are not
 given, reversed versions of the maps in the opposite directions are used.
 
-The default maps are in C<Lingua::Deva::Maps>.  To customize, make a copy of
+The default maps are in L<Lingua::Deva::Maps>.  To customize, make a copy of
 an existing mapping hash and pass it to one of these parameters.  Note that
-the map keys need to be in Unicode NFD form (see C<Unicode::Normalize>).
+the map keys need to be in Unicode NFD form (see L<Unicode::Normalize>).
 
 =back
 
@@ -245,7 +245,7 @@ sub l_to_tokens {
 =item l_to_aksaras()
 
 Converts its argument into "aksaras" and returns a reference to an array of
-aksaras (see C<Lingua::Deva::Aksara>).  The argument can be a Latin string, or
+aksaras (see L<Lingua::Deva::Aksara>).  The argument can be a Latin string, or
 a reference to an array of tokens.
 
     my $a = $d->l_to_aksaras('hyaḥ');
@@ -643,14 +643,14 @@ glts <676c7473@gmail.com>
 
 =head1 BUGS
 
-Report bugs to the author or at https://github.com/glts/Lingua-Deva/issues
+Report bugs to the author or at L<https://github.com/glts/Lingua-Deva/issues>.
 
 =head1 COPYRIGHT
 
 This program is free software.  You may copy or redistribute it under the same
 terms as Perl itself.
 
-Copyright (c) 2012 by glts <676c7473@gmail.com>
+Copyright (c) 2012 by glts E<lt>676c7473@gmail.comE<gt>
 
 This library is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself, either Perl version 5.12.1 or, at your option,

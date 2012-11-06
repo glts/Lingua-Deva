@@ -33,11 +33,11 @@ Lingua::Deva::Aksara - Object representation of a Devanagari "syllable"
 =head1 DESCRIPTION
 
 I<Akṣara> is the Sanskrit term for the basic unit above the character level in
-the Devanagari script.  A C<Lingua::Deva::Aksara> object is a Perl
+the Devanagari script.  A L<Lingua::Deva::Aksara> object is a Perl
 representation of such a unit.
 
-C<Lingua::Deva::Aksara> objects serve as an intermediate format for the
-conversion facilities in C<Lingua::Deva>.  Onset, vowel, and final tokens are
+L<Lingua::Deva::Aksara> objects serve as an intermediate format for the
+conversion facilities in L<Lingua::Deva>.  Onset, vowel, and final tokens are
 stored in separate fields.  Tokens are in Latin script, with no distinction
 between upper and lower case.
 
@@ -129,13 +129,13 @@ aksara conforms to the structure C<(C+(VF?)?)|(VF?)>, where the letters
 represent onset consonants, vowel, and final.  Then it checks whether the
 onset, vowel, and final fields contain only appropriate tokens.
 
-If the maps have been modified in the C<Lingua::Deva> instance, a reference to
+If the maps have been modified in the L<Lingua::Deva> instance, a reference to
 that instance can be passed along and the modified maps will be used.
 
     $d; # Lingua::Deva object with custom maps
     $a->is_valid($d);
 
-An aksara constructed through C<Lingua::Deva>'s public interface is already
+An aksara constructed through L<Lingua::Deva>'s public interface is already
 well-formed and no validity check is necessary.
 
 =cut

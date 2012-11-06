@@ -24,34 +24,42 @@ our @EXPORT_OK = qw( %Consonants %Vowels %Diacritics %Finals
 =head1 SYNOPSIS
 
     use Lingua::Deva::Maps::IAST;     # or
+    use Lingua::Deva::Maps::ISO15919; # or
     use Lingua::Deva::Maps::HK;       # or
-    use Lingua::Deva::Maps::ITRANS;   # or
-    use Lingua::Deva::Maps::ISO15919;
+    use Lingua::Deva::Maps::ITRANS;
 
     my $d = Lingua::Deva->new(map => 'HK');
     say $d->to_deva('gaNezaH'); # prints 'गणेशः'
 
 =head1 DESCRIPTION
 
-This module is intended for internal use in C<Lingua::Deva>.
+This module is intended for internal use in L<Lingua::Deva>.
 
 It does, however, provide the namespace for the ready-made transliteration
 schemes,
 
 =over 4
 
-=item Lingua::Deva::Maps::IAST International Alphabet of Sanskrit Transliteration
+=item L<Lingua::Deva::Maps::IAST>
 
-=item Lingua::Deva::Maps::HK Harvard-Kyoto
+International Alphabet of Sanskrit Transliteration (I<kṛṣṇa>).
 
-=item Lingua::Deva::Maps::ITRANS
+=item L<Lingua::Deva::Maps::ISO15919>
 
-=item Lingua::Deva::Maps::ISO15919 ISO 15919 (simplified)
+Simplified ISO 15919 (I<kr̥ṣṇa>).
+
+=item L<Lingua::Deva::Maps::HK>
+
+Harvard-Kyoto (I<kRSNa>).
+
+=item L<Lingua::Deva::Maps::ITRANS>
+
+ITRANS (I<kRRiShNa>).
 
 =back
 
 Every transliteration scheme provides four hashes, C<%Consonants>, C<%Vowels>,
-C<%Diacritics>, and C<%Finals>.  The C<Lingua::Deva> module relies on this
+C<%Diacritics>, and C<%Finals>.  The L<Lingua::Deva> module relies on this
 subdivision for its parsing and aksarization process.
 
 Inside these hashes the keys are Latin script "tokens" in canonically
@@ -71,7 +79,7 @@ significance (a != A) or not (A == a).
 
 TODO [outdated] Document advanced customization with CVDF.
 It is easy to customize these mappings.  This is done by copying and modifying a
-map from C<Lingua::Deva::Maps> and passing it to the C<Lingua::Deva>
+map from L<Lingua::Deva::Maps> and passing it to the L<Lingua::Deva>
 constructor.
 
     # Copy and modify the consonants map
@@ -90,15 +98,29 @@ constructor.
     );
     say $d->to_deva('gaNezaH'); # prints 'गणेशः'
 
-Finally, C<Lingua::Deva::Maps> also defines the global variables C<$Inherent>
-(the inherent vowel I<a>), C<$Virama> ( ्), and C<$Avagraha> (ऽ) which are
-unlikely to need configurability.
-
 It is the user's responsibility to make reasonable customizations; eg. the
 vowels (C<V>) and diacritics (C<D>) maps normally need to be customized in
 unison.
 
-complete customization
+Finally, L<Lingua::Deva::Maps> also defines the global variables
+
+=over 4
+
+=item C<$Inherent>
+
+the inherent vowel I<a>,
+
+=item C<$Virama>
+
+I<virāma> ( ्), and
+
+=item C<$Avagraha>
+
+I<avagraha> (ऽ),
+
+=back
+
+which are unlikely to need configurability.
 
 =cut
 
