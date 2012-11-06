@@ -60,17 +60,17 @@ calling C<to_deva()> or C<to_latin()> with appropriate string arguments.
     say $d->to_latin('कामसूत्र');
     say $d->to_deva('Kāmasūtra');
 
-The default translation maps adhere to the IAST transliteration scheme, but it
-is easy to customize these mappings.  This is done by copying and modifying a
-map from C<Lingua::Deva::Maps> and passing it to the C<Lingua::Deva>
-constructor.
+The default translation maps adhere to the IAST transliteration scheme.  Three
+other ready-made transliteration schemes are included with this module, ISO
+15919 (C<ISO15919>), Harvard-Kyoto (C<HK>), and ITRANS.  You can select a
+scheme by passing it to the constructor's C<map> argument.
 
-    # Copy and modify the consonants map
-    my %c = %Lingua::Deva::Maps::Consonants;
-    $c{"c\x{0327}"} = delete $c{"s\x{0301}"};
+    my $d = Lingua::Deva->new(map => 'HK');
+    say $d->to_latin('कामसूत्र'); # prints kAmasUtra
 
-    # Pass a reference to the modified map to the constructor
-    my $d = Lingua::Deva->new( C => \%c );
+In the case that the included maps are not enough, all transliteration
+mappings are completely customizable, see the instructions in
+C<Lingua::Deva::Maps>.
 
 Behind the scenes, all translation is done via an intermediate object
 representation called "aksara" (Sanskrit I<akṣara>).  These objects are
@@ -96,6 +96,10 @@ structure available for precise analysis and validation.
 Constructor.  Takes optional arguments which are described below.
 
 =over 4
+
+=item * C<< map => ( ISO15919 | ITRANS | IAST | HK ) >>
+
+Select a ready-made transliteration scheme.
 
 =item * C<< casesensitive => 0 or 1 >>
 
@@ -168,13 +172,32 @@ sub new {
         %opts,
     };
 
+    # Transliteration scheme setup
+    if (defined $self->{map}) {
+        if ($self->{map} =~ /^(ISO15919|ITRANS|IAST|HK)$/) {
+            no strict 'refs';
+            my $pkg = "Lingua::Deva::Maps::$1";
+            eval "require $pkg";
+            for (qw(Consonants Vowels Diacritics Finals)) {
+                my $k = substr $_, 0, 1;
+                $self->{$k} = do { my %c = %{"${pkg}::$_"}; \%c } unless defined $opts{$k};
+            }
+            if (!defined $opts{casesensitive} and defined ${"${pkg}::CASE"}) {
+                $self->{casesensitive} = ${"${pkg}::CASE"};
+            }
+        }
+        else {
+            carp("Invalid transliteration map, using default");
+        }
+    }
+
     # By default use reversed maps for the opposite direction (DC DV DD DF)
     for (qw( C V D F )) {
         $self->{"D$_"} = do { my %m = reverse %{$self->{$_}}; \%m } if !defined $self->{"D$_"};
     }
 
     # Make the inherent vowel translate to '' in the D map
-    $self->{D}->{$Inherent} = ''; # FIXME What is this for? Delete.
+    $self->{D}->{$Inherent} = '';
 
     # Convert the 'allow' array to a hash for fast lookup
     my %allow = map { $_ => 1 } @{ $self->{allow} };
@@ -329,11 +352,10 @@ sub l_to_aksaras {
 Converts a Devanagari string into "aksaras" and returns a reference to an
 array of aksaras.
 
-    my $text = 'बुद्धः';
-    my $a = $d->d_to_aksaras($text);
-
-    my $o = $a->[1]->onset();
-    # $o now refers to the array ['d','dh']
+    my $aksaras = $d->d_to_aksaras('बुद्धः');
+    my $onset = $aksaras->[1]->onset();
+    is_deeply( $onset, ['d', 'dh'], 'onset of second aksara' );
+    done_testing();
 
 Input tokens which can not be part of an aksara are passed through untouched.
 This means that the resulting array can contain both aksara objects and
@@ -554,7 +576,7 @@ sub to_latin {
     return $s;
 }
 
-=back 
+=back
 
 =cut
 
@@ -580,6 +602,7 @@ To use "ring below" instead of "dot below" for syllabic r:
 Use the aksara objects to produce simple statistics.
 
     # Count distinct rhymes in @aksaras
+    my %rhymes;
     for my $a (grep { defined $_->get_rhyme() } @aksaras) {
         $rhymes{ join '', @{$a->get_rhyme()} }++;
     }
@@ -620,7 +643,7 @@ glts <676c7473@gmail.com>
 
 =head1 BUGS
 
-Report bugs to the author or at https://github.com/glts/Lingua-Deva
+Report bugs to the author or at https://github.com/glts/Lingua-Deva/issues
 
 =head1 COPYRIGHT
 

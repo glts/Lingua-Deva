@@ -7,6 +7,8 @@ use charnames ':full';
 
 # Maps for IAST transliteration
 
+our $CASE = 0;
+
 our %Consonants = (
     "k"                 => "\N{DEVANAGARI LETTER KA}",
     "kh"                => "\N{DEVANAGARI LETTER KHA}",

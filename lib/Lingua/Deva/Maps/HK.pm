@@ -7,6 +7,8 @@ use charnames ':full';
 
 # Maps for Harvard-Kyoto transliteration
 
+our $CASE = 1;
+
 our %Consonants = (
     "k"   => "\N{DEVANAGARI LETTER KA}",
     "kh"  => "\N{DEVANAGARI LETTER KHA}",

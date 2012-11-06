@@ -5,6 +5,7 @@ lib/Lingua/Deva/Aksara.pm
 lib/Lingua/Deva/Maps.pm
 lib/Lingua/Deva/Maps/HK.pm
 lib/Lingua/Deva/Maps/IAST.pm
+lib/Lingua/Deva/Maps/ISO15919.pm
 lib/Lingua/Deva/Maps/ITRANS.pm
 MANIFEST			This list of files
 META.json
@@ -14,4 +15,5 @@ t/Aksara.t
 t/aksarize.t
 t/data.t
 t/Deva.t
+t/Maps.t
 t/translate.t

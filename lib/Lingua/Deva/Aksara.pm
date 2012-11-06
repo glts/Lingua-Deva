@@ -41,6 +41,9 @@ conversion facilities in C<Lingua::Deva>.  Onset, vowel, and final tokens are
 stored in separate fields.  Tokens are in Latin script, with no distinction
 between upper and lower case.
 
+TODO Note that tokens are in the transliteration that was used in producing the
+aksara.
+
 =head2 Methods
 
 =over 4
