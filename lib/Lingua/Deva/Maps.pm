@@ -89,6 +89,7 @@ constructor.
     # Pass a reference to the modified map to the constructor
     my $d = Lingua::Deva->new( C => \%c );
 
+    # TODO in this case here, it's vital to "use L::D::M::HK"!
     my $d = Lingua::Deva->new(
         casesensitive => 1,
         C => do { my %c = %Lingua::Deva::Maps::HK::Consonants; \%c },
