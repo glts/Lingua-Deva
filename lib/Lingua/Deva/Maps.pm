@@ -33,77 +33,93 @@ our @EXPORT_OK = qw( %Consonants %Vowels %Diacritics %Finals
 
 =head1 DESCRIPTION
 
-This module is intended for internal use in L<Lingua::Deva>.
+This module defines the default transliteration mappings for L<Lingua::Deva>
+and is intended for internal use.
 
 It does, however, provide the namespace for the ready-made transliteration
 schemes,
 
 =over 4
 
-=item L<Lingua::Deva::Maps::IAST>
+=item C<Lingua::Deva::Maps::IAST>
 
-International Alphabet of Sanskrit Transliteration (I<kṛṣṇa>).
+International Alphabet of Sanskrit Transliteration (I<kṛṣṇa>),
 
-=item L<Lingua::Deva::Maps::ISO15919>
+=item C<Lingua::Deva::Maps::ISO15919>
 
-Simplified ISO 15919 (I<kr̥ṣṇa>).
+Simplified ISO 15919 (I<kr̥ṣṇa>),
 
-=item L<Lingua::Deva::Maps::HK>
+=item C<Lingua::Deva::Maps::HK>
 
-Harvard-Kyoto (I<kRSNa>).
+Harvard-Kyoto (I<kRSNa>),
 
-=item L<Lingua::Deva::Maps::ITRANS>
+=item C<Lingua::Deva::Maps::ITRANS>
 
 ITRANS (I<kRRiShNa>).
 
 =back
 
+Users can also furnish their own transliteration schemes, but these must
+follow the layout of the existing schemes which is described in the following.
+
 Every transliteration scheme provides four hashes, C<%Consonants>, C<%Vowels>,
-C<%Diacritics>, and C<%Finals>.  The L<Lingua::Deva> module relies on this
+C<%Diacritics> (diacritic vowel signs), and C<%Finals> (I<anusvāra>,
+I<candrabindu>, I<visarga>).  The L<Lingua::Deva> module relies on this
 subdivision for its parsing and aksarization process.
 
-Inside these hashes the keys are Latin script "tokens" in canonically
-decomposed form (NFD), and the values are the Unicode characters in Devanagari
-script:
+Inside these hashes the keys are Latin script tokens and the values are the
+corresponding Devanagari characters:
 
     "bh" => "\N{DEVANAGARI LETTER BHA}" # in %Consonants
 
-The hash keys must be in canonically decomposed form.  For example a key "ç" (c
-with cedilla) needs to be entered as "c\x{0327}", ie. a "c" with combining
-cedilla. If the transliteration is case-insensitive, the keys must be
-lowercase.
+The hash keys ("tokens") must be in canonically decomposed form
+(L<NFD|Unicode::Normalize>).  For example a key "ç" ("c" with cedilla) needs
+to be entered as C<"c\x{0327}">, ie. a "c" with combining cedilla.  If the
+transliteration scheme is case-insensitive, the keys must be lowercase.
 
-In addition to the required four hash maps, a package variable named C<$CASE>
-may be present.  If it is, it specifies whether case distinctions have
-significance (a != A) or not (A == a).
+In addition to the required four hash maps, a boolean variable C<$CASE> may be
+present.  If it is, it specifies whether case distinctions by default do have
+significance (S<I<A> ≠ I<a>>) or not (S<I<A> = I<a>>) in the scheme.
 
-TODO [outdated] Document advanced customization with CVDF.
-It is easy to customize these mappings.  This is done by copying and modifying a
-map from L<Lingua::Deva::Maps> and passing it to the L<Lingua::Deva>
-constructor.
+The default mappings of a L<Lingua::Deva> object can be completely customized
+through the optional constructor arguments
 
-    # Copy and modify the consonants map
-    my %c = %Lingua::Deva::Maps::Consonants;
+=over 4
+
+=item *
+
+L<C|Lingua::Deva/new>, L<V|Lingua::Deva/new>, L<D|Lingua::Deva/new>,
+L<F|Lingua::Deva/new>, Latin to Devanagari maps,
+
+=item *
+
+L<DC|Lingua::Deva/new>, L<DV|Lingua::Deva/new>, L<DD|Lingua::Deva/new>,
+L<DF|Lingua::Deva/new>, Devanagari to Latin maps, and
+
+=item *
+
+L<casesensitive|Lingua::Deva/new>, case-sensitivity.
+
+=back
+
+The first eight of these are for mapping hashes which then override the
+default transliteration mappings (or the one given in the
+L<map|Lingua::Deva/new> option).  It is easiest to start by copying and
+modifying one of the existing maps.
+
+    # Include relevant module
+    use Lingua::Deva::Maps::IAST;
+
+    # Copy map, modify, then pass to the constructor
+    my %c = %Lingua::Deva::Maps::IAST::Consonants;
     $c{"c\x{0327}"} = delete $c{"s\x{0301}"};
-
-    # Pass a reference to the modified map to the constructor
     my $d = Lingua::Deva->new( C => \%c );
-
-    # TODO in this case here, it's vital to "use L::D::M::HK"!
-    my $d = Lingua::Deva->new(
-        casesensitive => 1,
-        C => do { my %c = %Lingua::Deva::Maps::HK::Consonants; \%c },
-        V => do { my %v = %Lingua::Deva::Maps::HK::Vowels;     \%v },
-        D => do { my %d = %Lingua::Deva::Maps::HK::Diacritics; \%d },
-        F => do { my %f = %Lingua::Deva::Maps::HK::Finals;     \%f },
-    );
-    say $d->to_deva('gaNezaH'); # prints 'गणेशः'
 
 It is the user's responsibility to make reasonable customizations; eg. the
 vowels (C<V>) and diacritics (C<D>) maps normally need to be customized in
 unison.
 
-Finally, L<Lingua::Deva::Maps> also defines the global variables
+Aside from all this, C<Lingua::Deva::Maps> also defines the global variables
 
 =over 4
 

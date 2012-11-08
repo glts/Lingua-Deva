@@ -18,31 +18,30 @@ Lingua::Deva::Aksara - Object representation of a Devanagari "syllable"
     use v5.12.1;
     use strict;
     use charnames ':full';
-    use open qw( :encoding(UTF-8) :std );
     use Lingua::Deva::Aksara;
 
     my $a = Lingua::Deva::Aksara->new(
-        onset => [ 'dh', 'r' ],
+        onset => ['dh', 'r'],
         vowel => 'au',
         final => "h\N{COMBINING DOT BELOW}",
     );
     $a->vowel( 'ai' );
     say 'valid' if $a->is_valid();
-    say @{ $a->get_rhyme() };
+    say @{ $a->get_rhyme() }; # prints 'aiḥ'
 
 =head1 DESCRIPTION
 
 I<Akṣara> is the Sanskrit term for the basic unit above the character level in
-the Devanagari script.  A L<Lingua::Deva::Aksara> object is a Perl
+the Devanagari script.  A C<Lingua::Deva::Aksara> object is a Perl
 representation of such a unit.
 
-L<Lingua::Deva::Aksara> objects serve as an intermediate format for the
+C<Lingua::Deva::Aksara> objects serve as an intermediate format for the
 conversion facilities in L<Lingua::Deva>.  Onset, vowel, and final tokens are
-stored in separate fields.  Tokens are in Latin script, with no distinction
-between upper and lower case.
-
-TODO Note that tokens are in the transliteration that was used in producing the
-aksara.
+stored in separate fields.  I<Tokens> are in Latin script; if the Aksara in
+question was created through the L<l_to_aksaras()|Lingua::Deva/l_to_aksaras>
+or L<d_to_aksaras()|Lingua::Deva/d_to_aksaras> method of a C<Lingua::Deva>
+object, then the tokens are in the transliteration format associated with that
+object.
 
 =head2 Methods
 
@@ -52,6 +51,7 @@ aksara.
 
 Constructor.  Can take optional initial data as its argument.
 
+    use Lingua::Deva::Aksara;
     Lingua::Deva::Aksara->new( onset => ['gh', 'r'] );
 
 =cut
@@ -64,7 +64,7 @@ sub new {
 
 =item onset()
 
-Accessor method for the array of onset tokens of this aksara.
+Accessor method for the array of onset tokens of this Aksara.
 
     my $a = Lingua::Deva::Aksara->new();
     $a->onset( ['d', 'r'] ); # sets onset tokens to ['d', 'r']
@@ -82,7 +82,7 @@ sub onset {
 
 =item vowel()
 
-Accessor method for the vowel token of this aksara.  Returns undefined when
+Accessor method for the vowel token of this Aksara.  Returns undefined when
 there is no vowel.
 
 =cut
@@ -95,7 +95,7 @@ sub vowel {
 
 =item final()
 
-Accessor method for the final token of this aksara.  Returns undefined when
+Accessor method for the final token of this Aksara.  Returns undefined when
 there is no final.
 
 =cut
@@ -108,10 +108,10 @@ sub final {
 
 =item get_rhyme()
 
-Returns the rhyme of this aksara.  This is a reference to an array consisting
+Returns the rhyme of this Aksara.  This is a reference to an array consisting
 of vowel and final.  Undefined if there is no rhyme.
 
-The aksara is assumed to be well-formed.
+The Aksara is assumed to be well-formed.
 
 =cut
 
@@ -124,19 +124,21 @@ sub get_rhyme {
 
 =item is_valid()
 
-Checks the formal validity of this aksara.  This method first checks if the
-aksara conforms to the structure C<(C+(VF?)?)|(VF?)>, where the letters
+Checks the formal validity of this Aksara.  This method first checks if the
+Aksara conforms to the structure C<(C+(VF?)?)|(VF?)>, where the letters
 represent onset consonants, vowel, and final.  Then it checks whether the
 onset, vowel, and final fields contain only appropriate tokens.
 
-If the maps have been modified in the L<Lingua::Deva> instance, a reference to
-that instance can be passed along and the modified maps will be used.
+In order to do validation against a different transliteration scheme than the
+default one, a reference to a customized C<Lingua::Deva> instance can be
+passed along.
 
-    $d; # Lingua::Deva object with custom maps
-    $a->is_valid($d);
+    $d; # Lingua::Deva object with custom transliteration
+    say $a->is_valid($d);
 
-An aksara constructed through L<Lingua::Deva>'s public interface is already
-well-formed and no validity check is necessary.
+An Aksara constructed through C<Lingua::Deva>'s public interface is already
+well-formed (ie. in accordance with the particular transliteration used) and
+no validity check is necessary.
 
 =cut
 
@@ -147,7 +149,7 @@ sub is_valid {
                     ? ($deva->{C}, $deva->{V}, $deva->{F})
                     : (\%Consonants, \%Vowels, \%Finals);
 
-    # Check aksara structure
+    # Check Aksara structure
     my $s = @{ $self->{onset} // [] } ? 'C' : '';
     $s   .=    $self->{vowel}         ? 'V' : '';
     $s   .=    $self->{final}         ? 'F' : '';
@@ -155,7 +157,7 @@ sub is_valid {
 
     # After this point empty strings and arrays have been rejected
 
-    # Check aksara tokens
+    # Check Aksara tokens
     if (defined $self->{onset}) {
         for my $o (@{ $self->{onset} }) {
             return 0 if not defined $C->{$o};

@@ -26,8 +26,7 @@ my @dlines = split /\n/, <<'EOF';
 इव बाल्यात् सर्वतः दाने अप्रधृष्यं qअf सिंहग्रीवो तदा याहि
 EOF
 
-# Tests with a larger dataset
-
+# Use a larger dataset
 my (@large, @dlarge);
 push @large, @lines for (1..1000);
 push @dlarge, @dlines for (1..1000);
@@ -57,7 +56,7 @@ my @aksaras;
 $start = times();
 for (@large) { push @aksaras, @{ $d->l_to_aksaras($_) } }
 $end = times();
-ok( 1, 'create array of ' . @aksaras . ' aksaras ' . secs($start, $end) ); 
+ok( 1, 'create array of ' . @aksaras . ' aksaras ' . secs($start, $end) );
 
 $start = times();
 my @real_aksaras = grep { ref($_) eq 'Lingua::Deva::Aksara' } @aksaras;

@@ -12,3 +12,4 @@
        - Moved IAST map, added maps for ITRANS, Harvard-Kyoto, ISO 15919.
        - Added option for case-sensitive maps (a != A).
        - Added missing Avagraha handling.
+       - Reviewed documentation.

@@ -24,13 +24,13 @@ is( $d->to_deva('Śiva'), NFD('Śइव'), 'override default map case-sensitivit
     my $warnings = 0;
     local $SIG{__WARN__} = sub { $warnings++ };
 
-    my %f = %Lingua::Deva::Maps::ITRANS::Finals;
+    my %df = reverse %Lingua::Deva::Maps::ITRANS::Finals;
     $d = Lingua::Deva->new(
         map => 'BOGUS',
-        F   => do { $f{'MM'} = delete $f{'M'}; \%f },
+        DF   => do { $df{"\x{0902}"} = "MM"; \%df },
     );
 
     is( $warnings, 1, 'emit warning for invalid scheme' );
 
-    is( $d->to_latin('वृत्रं'), 'vṛtraMM', 'fall back on default (customized) map for invalid scheme' );
+    is( $d->to_latin('वृत्रं'), 'vṛtraMM', 'fall back on default map for invalid scheme' );
 }
