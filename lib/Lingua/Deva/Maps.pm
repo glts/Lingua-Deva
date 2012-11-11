@@ -51,7 +51,7 @@ Simplified ISO 15919 (I<kr̥ṣṇa>),
 
 =item C<Lingua::Deva::Maps::HK>
 
-Harvard-Kyoto (I<kRSNa>),
+Harvard-Kyoto (I<kRSNa>), and
 
 =item C<Lingua::Deva::Maps::ITRANS>
 
@@ -102,12 +102,11 @@ L<casesensitive|Lingua::Deva/new>, case-sensitivity.
 
 =back
 
-The first eight of these are for mapping hashes which then override the
-default transliteration mappings (or the one given in the
-L<map|Lingua::Deva/new> option).  It is easiest to start by copying and
-modifying one of the existing maps.
+The first eight of these serve to override the default transliteration
+mappings (or the one passed through the L<map|Lingua::Deva/new> option).  It
+is easiest to start by copying and modifying one of the existing maps.
 
-    # Include relevant module
+    # Include the relevant module
     use Lingua::Deva::Maps::IAST;
 
     # Copy map, modify, then pass to the constructor

@@ -28,7 +28,7 @@
    "provides" : {
       "Lingua::Deva" : {
          "file" : "lib/Lingua/Deva.pm",
-         "version" : "1.11"
+         "version" : "1.20"
       },
       "Lingua::Deva::Aksara" : {
          "file" : "lib/Lingua/Deva/Aksara.pm",
@@ -45,5 +45,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "1.11"
+   "version" : "1.20"
 }

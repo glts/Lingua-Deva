@@ -7,7 +7,7 @@
        - Pluralized *_to_aksara() method names.
        - Removed redundant "push"es in to_deva() and to_latin().
 
-1.20   work in progress
+1.20   2012-11-12
        - Refactored internal maps handling and simplified usage.
        - Moved IAST map, added maps for ITRANS, Harvard-Kyoto, ISO 15919.
        - Added option for case-sensitive maps (a != A).

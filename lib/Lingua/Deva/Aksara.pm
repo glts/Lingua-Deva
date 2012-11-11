@@ -136,7 +136,7 @@ passed along.
     $d; # Lingua::Deva object with custom transliteration
     say $a->is_valid($d);
 
-An Aksara constructed through C<Lingua::Deva>'s public interface is already
+An Aksara constructed through L<Lingua::Deva>'s public interface is already
 well-formed (ie. in accordance with the particular transliteration used) and
 no validity check is necessary.
 

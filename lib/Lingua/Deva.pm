@@ -21,7 +21,7 @@ Lingua::Deva - Convert between Latin and Devanagari Sanskrit text
 
 =cut
 
-our $VERSION = '1.11';
+our $VERSION = '1.20';
 
 =head1 SYNOPSIS
 
@@ -161,7 +161,8 @@ these are not given, reversed versions of the Latin to Devanagari maps are
 used.
 
 The default maps are in L<Lingua::Deva::Maps>.  To customize, make a copy of
-an existing mapping hash and pass it to one of these parameters.
+an existing mapping hash (or create your own) and pass it to one of these
+parameters.
 
 =back
 
