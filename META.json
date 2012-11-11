@@ -37,6 +37,22 @@
       "Lingua::Deva::Maps" : {
          "file" : "lib/Lingua/Deva/Maps.pm",
          "version" : 0
+      },
+      "Lingua::Deva::Maps::HK" : {
+         "file" : "lib/Lingua/Deva/Maps/HK.pm",
+         "version" : 0
+      },
+      "Lingua::Deva::Maps::IAST" : {
+         "file" : "lib/Lingua/Deva/Maps/IAST.pm",
+         "version" : 0
+      },
+      "Lingua::Deva::Maps::ISO15919" : {
+         "file" : "lib/Lingua/Deva/Maps/ISO15919.pm",
+         "version" : 0
+      },
+      "Lingua::Deva::Maps::ITRANS" : {
+         "file" : "lib/Lingua/Deva/Maps/ITRANS.pm",
+         "version" : 0
       }
    },
    "release_status" : "stable",
