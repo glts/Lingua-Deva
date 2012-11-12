@@ -57,7 +57,7 @@ form of instances of the L<Lingua::Deva> class.  A number of configuration
 options can be passed to it during initialization.
 
 Using the module is as simple as creating a C<Lingua::Deva> instance and
-calling its methods L<to_deva()> or L<to_latin()> with appropriate string
+calling its methods L</to_deva> or L</to_latin> with appropriate string
 arguments.
 
     my $d = Lingua::Deva->new();
@@ -261,7 +261,7 @@ L<Aksaras|Lingua::Deva::Aksara> and returns a reference to an array of
 Aksaras.
 
     my $a = $d->l_to_aksaras('hyaḥ');
-    is( ref($a->[0]), 'Lingua::Deva::Aksara', 'one aksara object' );
+    is( ref($a->[0]), 'Lingua::Deva::Aksara', 'one Aksara object' );
     done_testing();
 
 Input tokens which can not be part of an Aksara pass through untouched.  Thus,
@@ -284,18 +284,18 @@ sub l_to_aksaras {
     my ($C, $V, $F) = ($self->{C}, $self->{V}, $self->{F});
 
     # Aksarization is implemented with a state machine.
-    # State 0: Not currently constructing an aksara, ready for any input
+    # State 0: Not currently constructing an Aksara, ready for any input
     # State 1: Constructing consonantal onset
-    # State 2: Onset and vowel read, ready for final or end of aksara
+    # State 2: Onset and vowel read, ready for final or end of Aksara
 
     for my $t (@$tokens) {
         my $lct = $self->{casesensitive} ? $t : lc $t;
         if ($state == 0) {
-            if (exists $C->{$lct}) {         # consonant: new aksara
+            if (exists $C->{$lct}) {         # consonant: new Aksara
                 $a = Lingua::Deva::Aksara->new( onset => [ $lct ] );
                 $state = 1;
             }
-            elsif (exists $V->{$lct}) {      # vowel: vowel-initial aksara
+            elsif (exists $V->{$lct}) {      # vowel: vowel-initial Aksara
                 $a = Lingua::Deva::Aksara->new( vowel => $lct );
                 $state = 2;
             }
@@ -325,17 +325,17 @@ sub l_to_aksaras {
             }
         }
         elsif ($state == 2) {
-            if (exists $C->{$lct}) {         # consonant: new aksara
+            if (exists $C->{$lct}) {         # consonant: new Aksara
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( onset => [ $lct ] );
                 $state = 1;
             }
-            elsif (exists $V->{$lct}) {      # vowel: new vowel-initial aksara
+            elsif (exists $V->{$lct}) {      # vowel: new vowel-initial Aksara
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $lct );
                 $state = 2;
             }
-            elsif (exists $F->{$lct}) {      # final: end of aksara
+            elsif (exists $F->{$lct}) {      # final: end of Aksara
                 $a->final( $lct );
                 push @aksaras, $a;
                 $state = 0;
@@ -351,7 +351,7 @@ sub l_to_aksaras {
         }
     }
 
-    # Finish aksara currently under construction
+    # Finish Aksara currently under construction
     push @aksaras, $a if $state == 1 or $state == 2;
 
     return \@aksaras;
@@ -366,7 +366,7 @@ a reference to an array of Aksaras.
 
     my $aksaras = $d->d_to_aksaras('बुद्धः');
     my $onset = $aksaras->[1]->onset();
-    is_deeply( $onset, ['d', 'dh'], 'onset of second aksara' );
+    is_deeply( $onset, ['d', 'dh'], 'onset of second Aksara' );
     done_testing();
 
 Input tokens which can not be part of an Aksara pass through untouched.  Thus,
@@ -388,19 +388,19 @@ sub d_to_aksaras {
                                 $self->{DD}, $self->{DF} );
 
     # Aksarization is implemented with a state machine.
-    # State 0: Not currently constructing an aksara, ready for any input
+    # State 0: Not currently constructing an Aksara, ready for any input
     # State 1: Consonant with inherent vowel, ready for vowel, Virama, final
-    # State 2: Virama read, ready for consonant or end of aksara
-    # State 3: Vowel read, ready for final or end of aksara
+    # State 2: Virama read, ready for consonant or end of Aksara
+    # State 3: Vowel read, ready for final or end of Aksara
     # The inherent vowel needs to be taken into account specially
 
     for my $c (@chars) {
         if ($state == 0) {
-            if (exists $DC->{$c}) {          # consonant: new aksara
+            if (exists $DC->{$c}) {          # consonant: new Aksara
                 $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
                 $state = 1;
             }
-            elsif (exists $DV->{$c}) {       # vowel: vowel-initial aksara
+            elsif (exists $DV->{$c}) {       # vowel: vowel-initial Aksara
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
@@ -422,18 +422,18 @@ sub d_to_aksaras {
                 $a->vowel( $DD->{$c} );
                 $state = 3;
             }
-            elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
+            elsif (exists $DV->{$c}) {       # vowel: new vowel-initial Aksara
                 $a->vowel( $Inherent );
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
             }
-            elsif (exists $DC->{$c}) {       # consonant: new aksara
+            elsif (exists $DC->{$c}) {       # consonant: new Aksara
                 $a->vowel( $Inherent );
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
             }
-            elsif (exists $DF->{$c}) {       # final: end of aksara
+            elsif (exists $DF->{$c}) {       # final: end of Aksara
                 $a->vowel( $Inherent );
                 $a->final( $DF->{$c} );
                 push @aksaras, $a;
@@ -458,7 +458,7 @@ sub d_to_aksaras {
                 push @{ $a->onset() }, $DC->{$c};
                 $state = 1;
             }
-            elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
+            elsif (exists $DV->{$c}) {       # vowel: new vowel-initial Aksara
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
@@ -475,18 +475,18 @@ sub d_to_aksaras {
                 $state = 0;
             }
         }
-        elsif ($state == 3) {                # final: end of aksara
+        elsif ($state == 3) {                # final: end of Aksara
             if (exists $DF->{$c}) {
                 $a->final( $DF->{$c} );
                 push @aksaras, $a;
                 $state = 0;
             }
-            elsif (exists $DC->{$c}) {       # consonant: new aksara
+            elsif (exists $DC->{$c}) {       # consonant: new Aksara
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( onset => [ $DC->{$c} ] );
                 $state = 1;
             }
-            elsif (exists $DV->{$c}) {       # vowel: new vowel-initial aksara
+            elsif (exists $DV->{$c}) {       # vowel: new vowel-initial Aksara
                 push @aksaras, $a;
                 $a = Lingua::Deva::Aksara->new( vowel => $DV->{$c} );
                 $state = 3;
@@ -505,7 +505,7 @@ sub d_to_aksaras {
         }
     }
 
-    # Finish aksara currently under construction
+    # Finish Aksara currently under construction
     given ($state) {
         when (1)      { $a->vowel( $Inherent ); continue }
         when ([1..3]) { push @aksaras, $a }
