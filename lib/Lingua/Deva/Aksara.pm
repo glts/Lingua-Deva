@@ -130,13 +130,13 @@ represent onset consonants, vowel, and final.  Then it checks whether the
 onset, vowel, and final fields contain only appropriate tokens.
 
 In order to do validation against a different transliteration scheme than the
-default one, a reference to a customized C<Lingua::Deva> instance can be
+default one, a reference to a customized L<Lingua::Deva> instance can be
 passed along.
 
     $d; # Lingua::Deva object with custom transliteration
     say $a->is_valid($d);
 
-An Aksara constructed through L<Lingua::Deva>'s public interface is already
+An Aksara constructed through C<Lingua::Deva>'s public interface is already
 well-formed (ie. in accordance with the particular transliteration used) and
 no validity check is necessary.
 
@@ -153,7 +153,7 @@ sub is_valid {
     my $s = @{ $self->{onset} // [] } ? 'C' : '';
     $s   .=    $self->{vowel}         ? 'V' : '';
     $s   .=    $self->{final}         ? 'F' : '';
-    return 0 if $s =~ m/^(C?F|)$/;
+    return 0 if $s =~ m/^(?:C?F)?$/;
 
     # After this point empty strings and arrays have been rejected
 
